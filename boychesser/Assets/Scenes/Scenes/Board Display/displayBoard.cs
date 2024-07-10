@@ -33,6 +33,8 @@ public class displayBoard : MonoBehaviour
     //tiles
     public const float tileSize = 1.0f;
     Tile[] tiles = new Tile[64];
+    string[] ranks = new string[] { "a", "b", "c", "d", "e", "f", "g", "h" };
+    string[] files = new string[] { "1", "2", "3", "4", "5", "6", "7", "8" };
     Tile selectedTile = null;
     Tile targetTile = null;
 
@@ -87,18 +89,18 @@ public class displayBoard : MonoBehaviour
                         else if (selectedTile != null)
                         {
                             targetTile = tiles[file + rank * 8];
-                            Debug.Log(targetTile.getCurPiece());
+                            Debug.Log(targetTile.getName());
 
                             targetTile.changeCurPiece(selectedTile.getCurPiece());
-                            selectedTile.changeCurPiece('0');
+                            selectedTile.changeCurPiece('0');                          
 
                             //reset selected and target tiles
                             selectedTile = null;
                             targetTile = null;
 
                             //updaete fen
-                            updateFen();
-
+                            
+                            curFen = new Fen(createNewFen(null));
                             //replace pieces
 
                             GameObject[] pieces = GameObject.FindGameObjectsWithTag("piece");
@@ -108,6 +110,7 @@ public class displayBoard : MonoBehaviour
                             }
 
                             placePieces();
+                            Debug.Log(curFen.ToString());
                         }
                     }
                 }
@@ -115,9 +118,8 @@ public class displayBoard : MonoBehaviour
         }
     }
 
-    void updateFen()
+    string getNewBoardstate()
     {
-        // Construct the board part of the FEN string
         string boardFen = "";
         int emptyCount = 0;
 
@@ -155,21 +157,24 @@ public class displayBoard : MonoBehaviour
             }
         }
 
+        return boardFen;
+    }
+
+    string createNewFen(string moveType)
+    {
+        
         // Extract the other parts of the previous FEN
         string curFenString = curFen.ToString();
         string[] fenParts = curFenString.Split(' ');
-        string activeColor = fenParts.Length > 1 ? fenParts[1] : "w";
+        string activeColor = fenParts[1] == "w" ? "b" : "w";
         string castlingAvailability = fenParts.Length > 2 ? fenParts[2] : "-";
         string enPassantTarget = fenParts.Length > 3 ? fenParts[3] : "-";
         string halfmoveClock = fenParts.Length > 4 ? fenParts[4] : "0";
         string fullmoveNumber = fenParts.Length > 5 ? fenParts[5] : "1";
 
         // Construct the full FEN string
-        string newFenString = boardFen + " " + activeColor + " " + castlingAvailability + " " + enPassantTarget + " " + halfmoveClock + " " + fullmoveNumber;
-        Fen newFen = new Fen(newFenString);
-
-        //update the current fen
-        curFen = newFen;
+        string newFenString = getNewBoardstate() + " " + activeColor + " " + castlingAvailability + " " + enPassantTarget + " " + halfmoveClock + " " + fullmoveNumber;
+        return newFenString;
     }
 
     void placePieces()
@@ -281,7 +286,9 @@ public class displayBoard : MonoBehaviour
 
                 GameObject tile = Instantiate(squareColor, new Vector3(file * tileSize - 4.0f, rank * tileSize - 4.0f), Quaternion.identity);
 
-                Tile t = new Tile(tileNum);
+
+                string tileName = ranks[rank] + files[file];
+                Tile t = new Tile(tileNum, tileName);
                 tiles[tileNum] = t;
                 tileNum++;
             }
@@ -333,11 +340,13 @@ class Fen
 class Tile
 {
     private int num;
+    private string name;
     private char curPiece;
 
-    public Tile(int num)
+    public Tile(int num, string name)
     {
         this.num = num;
+        this.name = name;
         curPiece = '0';
     }
 
@@ -359,5 +368,9 @@ class Tile
     public int getNum()
     {
         return num;
+    }
+    public string getName()
+    {
+        return name;
     }
 }
