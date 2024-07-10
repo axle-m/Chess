@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 
 public class displayBoard : MonoBehaviour
@@ -27,18 +28,18 @@ public class displayBoard : MonoBehaviour
 
 
     //fen
-    public const string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    //"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+    public const string startFen = "8/8/8/4Q3/8/8/8/8 w KQkq - 0 1";
     Fen curFen = null;
 
     //tiles
     public const float tileSize = 1.0f;
-    Tile[] tiles = new Tile[64];
+    public Tile[] tiles = new Tile[64];
     string[] ranks = new string[] { "a", "b", "c", "d", "e", "f", "g", "h" };
     string[] files = new string[] { "1", "2", "3", "4", "5", "6", "7", "8" };
     Tile selectedTile = null;
     Tile targetTile = null;
-
-
 
     void Start()
     {
@@ -46,6 +47,8 @@ public class displayBoard : MonoBehaviour
 
         CreateGraphicalBoard();
         placePieces();
+
+        legalMovesList();
     }
 
     private void Update()
@@ -116,6 +119,496 @@ public class displayBoard : MonoBehaviour
                 }
             }
         }
+    }
+    //TODO: implement putsInCheck
+
+    bool putsInCheck()
+    {
+        return false;
+    }
+
+     List<string>[] legalMovesList()
+    {
+        List<string>[] legalMovesList = new List<string>[6];
+
+        for (int j = 0; j < 6; j++)
+        {
+            legalMovesList[j] = new List<string>();
+        }
+
+        for (int i = 0; i < 64; i++)
+        {
+            bool exhaustedMoves = false;
+            bool isLeftEdge = i % 8 == 0;
+            bool isRightEdge = i % 8 == 7;
+            bool isTopEdge = i > 55;
+            bool isBottomEdge = i < 8;
+
+            if (tiles[i].hasPiece())
+            {
+                switch (tiles[i].getPieceType())
+                {
+                    case 'k':
+
+                        while (!exhaustedMoves)
+                        {
+
+                            if (!isLeftEdge)
+                            {
+                                //move up left
+                                if (i + 7 < 63 && tiles[i + 7].getPieceType() == '0' && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("K" + tiles[i + 7].getName());
+                                }
+                                else if (i + 7 < 63 && tiles[i + 7].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("Kx" + tiles[i + 7].getName());
+                                }
+
+                                //move down left
+                                if (i - 7 > 0 && tiles[i - 7].getPieceType() == '0' && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("K" + tiles[i - 7].getName());
+                                }
+                                else if (i - 7 > 0 && tiles[i - 7].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("Kx" + tiles[i - 7].getName());
+                                }
+
+                                //move left
+                                if (i - 1 > 0 && tiles[i - 1].getPieceType() == '0' && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("K" + tiles[i - 1].getName());
+                                }
+                                else if (i - 1 > 0 && tiles[i + 1].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("Kx" + tiles[i - 1].getName());
+                                }
+                            }
+
+                            if (!isRightEdge)
+                            {
+                                //move up right
+                                if (i + 9 < 63 && tiles[i + 9].getPieceType() == '0' && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("K" + tiles[i + 9].getName());
+                                }
+                                else if (i + 9 < 63 && tiles[i + 9].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("Kx" + tiles[i + 9].getName());
+                                }
+
+                                //move down right
+                                if (i - 8 > 0 && tiles[i - 9].getPieceType() == '0' && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("K" + tiles[i - 8].getName());
+                                }
+                                else if (i - 8 > 0 && tiles[i - 8].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("Kx" + tiles[i - 8].getName());
+                                }
+
+                                //move right
+                                if (i + 1 < 63 && tiles[i + 1].getPieceType() == '0' && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("K" + tiles[i - 7].getName());
+                                }
+                                else if (i + 1 < 63 && tiles[i + 1].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("Kx" + tiles[i + 1].getName());
+                                }
+                            }
+
+
+                            //move up
+                            if (i + 8 < 63 && tiles[i + 8].getPieceType() == '0' && !putsInCheck())
+                            {
+                                legalMovesList[0].Add("K" + tiles[i + 8].getName());
+                            }
+                            else if (i + 8 < 63 && tiles[i + 8].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck())
+                            {
+                                legalMovesList[0].Add("Kx" + tiles[i + 8].getName());
+                            }
+
+                            //move down
+                            if (i - 8 > 0 && tiles[i - 8].getPieceType() == '0' && !putsInCheck())
+                            {
+                                legalMovesList[0].Add("K" + tiles[i - 8].getName());
+                            }
+                            else if (i - 8 > 0 && tiles[i - 8].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck())
+                            {
+                                legalMovesList[0].Add("Kx" + tiles[i - 8].getName());
+                            }
+
+                            else
+                            {
+                                exhaustedMoves = true;
+                            }   
+                        }
+
+                        break;
+
+
+
+                    case 'q':
+                        
+                        //vertical moves
+
+                        //move up
+                        int tempIndex = i;
+                        while (tempIndex + 8 < 63)
+                        {
+                            if (tiles[tempIndex + 8].getPieceType() == '0')
+                            {
+                                legalMovesList[1].Add("Q" + tiles[tempIndex + 8].getName());
+                            }
+                            else if (tiles[tempIndex + 8].getPieceColor() != tiles[i].getPieceColor())
+                            {
+                                legalMovesList[1].Add("Qx" + tiles[tempIndex + 8].getName());
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            tempIndex += 8;
+                        }
+
+                        //move down
+                        tempIndex = i;
+                        while (tempIndex - 8 > 0)
+                        {
+                            if (tiles[tempIndex - 8].getPieceType() == '0')
+                            {
+                                legalMovesList[1].Add("Q" + tiles[tempIndex - 8].getName());
+                            }
+                            else if (tiles[tempIndex - 8].getPieceColor() != tiles[i].getPieceColor())
+                            {
+                                legalMovesList[1].Add("Qx" + tiles[tempIndex - 8].getName());
+                                break;
+                            }
+                            else
+                            {
+                                break;  
+                            }
+                            tempIndex -= 8;
+                        }
+
+                        //horizontal moves
+
+                        //move right
+                        tempIndex = i;
+                        while (tempIndex % 8 != 7)
+                        {
+                            if (tiles[tempIndex + 1].getPieceType() == '0')
+                            {
+                                legalMovesList[1].Add("Q" + tiles[tempIndex + 1].getName());
+                            }
+                            else if (tiles[tempIndex + 1].getPieceColor() != tiles[i].getPieceColor())
+                            {
+                                legalMovesList[1].Add("Qx" + tiles[tempIndex + 1].getName());
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            tempIndex += 1;
+                        }     
+                        
+                        //move left
+                        tempIndex = i;
+                        while(tempIndex % 8 != 0)
+                        {
+                            if (tiles[tempIndex - 1].getPieceType() == '0')
+                            {
+                                legalMovesList[1].Add("Q" + tiles[tempIndex - 1].getName());
+                            }
+                            else if (tiles[tempIndex - 1].getPieceColor() != tiles[i].getPieceColor())
+                            {
+                                legalMovesList[1].Add("Qx" + tiles[tempIndex - 1].getName());
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            tempIndex -= 1;
+                        }
+
+                        // diagonal moves
+
+                        // move up right
+                        tempIndex = i;
+                        while ((tempIndex % 8 != 7) && (tempIndex + 9 <= 63))
+                        {
+                            if (tiles[tempIndex + 9].getPieceType() == '0')
+                            {
+                                legalMovesList[1].Add("Q" + tiles[tempIndex + 9].getName());
+                            }
+                            else if (tiles[tempIndex + 9].getPieceColor() != tiles[i].getPieceColor())
+                            {
+                                legalMovesList[1].Add("Qx" + tiles[tempIndex + 9].getName());
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            tempIndex += 9;
+                        }
+
+                        // move up left
+                        tempIndex = i;
+                        while ((tempIndex % 8 != 0) && (tempIndex + 7 <= 63))
+                        {
+                            if (tiles[tempIndex + 7].getPieceType() == '0')
+                            {
+                                legalMovesList[1].Add("Q" + tiles[tempIndex + 7].getName());
+                            }
+                            else if (tiles[tempIndex + 7].getPieceColor() != tiles[i].getPieceColor())
+                            {
+                                legalMovesList[1].Add("Qx" + tiles[tempIndex + 7].getName());
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            tempIndex += 7;
+                        }
+
+                        // move down right
+                        tempIndex = i;
+                        while ((tempIndex % 8 != 7) && (tempIndex - 7 >= 0))
+                        {
+                            if (tiles[tempIndex - 7].getPieceType() == '0')
+                            {
+                                legalMovesList[1].Add("Q" + tiles[tempIndex - 7].getName());
+                            }
+                            else if (tiles[tempIndex - 7].getPieceColor() != tiles[i].getPieceColor())
+                            {
+                                legalMovesList[1].Add("Qx" + tiles[tempIndex - 7].getName());
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            tempIndex -= 7;
+                        }
+
+                        // move down left
+                        tempIndex = i;
+                        while ((tempIndex % 8 != 0) && (tempIndex - 9 >= 0))
+                        {
+                            if (tiles[tempIndex - 9].getPieceType() == '0')
+                            {
+                                legalMovesList[1].Add("Q" + tiles[tempIndex - 9].getName());
+                            }
+                            else if (tiles[tempIndex - 9].getPieceColor() != tiles[i].getPieceColor())
+                            {
+                                legalMovesList[1].Add("Qx" + tiles[tempIndex - 9].getName());
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            tempIndex -= 9;
+                        }
+
+                        break;
+
+
+
+                    case 'r':
+
+                        //vertical moves
+
+                        //move up
+                        tempIndex = i;
+                        while (tempIndex + 8 < 63)
+                        {
+                            if (tiles[tempIndex + 8].getPieceType() == '0')
+                            {
+                                legalMovesList[2].Add("R" + tiles[tempIndex + 8].getName());
+                            }
+                            else if (tiles[tempIndex + 8].getPieceColor() != tiles[i].getPieceColor())
+                            {
+                                legalMovesList[2].Add("Rx" + tiles[tempIndex + 8].getName());
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            tempIndex += 8;
+                        }
+
+                        //move down
+                        tempIndex = i;
+                        while (tempIndex - 8 > 0)
+                        {
+                            if (tiles[tempIndex - 8].getPieceType() == '0')
+                            {
+                                legalMovesList[2].Add("R" + tiles[tempIndex - 8].getName());
+                            }
+                            else if (tiles[tempIndex - 8].getPieceColor() != tiles[i].getPieceColor())
+                            {
+                                legalMovesList[2].Add("Rx" + tiles[tempIndex - 8].getName());
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            tempIndex -= 8;
+                        }
+
+                        //horizontal moves
+
+                        //move right
+                        tempIndex = i;
+                        while (tempIndex % 8 != 7)
+                        {
+                            if (tiles[tempIndex + 1].getPieceType() == '0')
+                            {
+                                legalMovesList[2].Add("R" + tiles[tempIndex + 1].getName());
+                            }
+                            else if (tiles[tempIndex + 1].getPieceColor() != tiles[i].getPieceColor())
+                            {
+                                legalMovesList[2].Add("Rx" + tiles[tempIndex + 1].getName());
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            tempIndex += 1;
+                        }
+
+                        //move left
+                        while (tempIndex % 8 != 0)
+                        {
+                            if (tiles[tempIndex - 1].getPieceType() == '0')
+                            {
+                                legalMovesList[2].Add("R" + tiles[tempIndex - 1].getName());
+                            }
+                            else if (tiles[tempIndex - 1].getPieceColor() != tiles[i].getPieceColor())
+                            {
+                                legalMovesList[2].Add("Rx" + tiles[tempIndex - 1].getName());
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            tempIndex -= 1;
+                        }
+
+                        break;
+
+
+
+
+                    case 'b':
+                        
+                       //move up right
+                        tempIndex = i;
+                        while ((tempIndex % 8 != 7) && (tempIndex + 9 <= 63))
+                        {
+                            if (tiles[tempIndex + 9].getPieceType() == '0')
+                            {
+                                legalMovesList[3].Add("B" + tiles[tempIndex + 9].getName());
+                            }
+                            else if (tiles[tempIndex + 9].getPieceColor() != tiles[i].getPieceColor())
+                            {
+                                legalMovesList[3].Add("Bx" + tiles[tempIndex + 9].getName());
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            tempIndex += 9;
+                        }
+
+                        // move up left
+                        tempIndex = i;
+                        while ((tempIndex % 8 != 0) && (tempIndex + 7 <= 63))
+                        {
+                            if (tiles[tempIndex + 7].getPieceType() == '0')
+                            {
+                                legalMovesList[3].Add("B" + tiles[tempIndex + 7].getName());
+                            }
+                            else if (tiles[tempIndex + 7].getPieceColor() != tiles[i].getPieceColor())
+                            {
+                                legalMovesList[3].Add("Bx" + tiles[tempIndex + 7].getName());
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            tempIndex += 7;
+                        }
+
+                        // move down right
+                        tempIndex = i;
+                        while ((tempIndex % 8 != 7) && (tempIndex - 7 >= 0))
+                        {
+                            if (tiles[tempIndex - 7].getPieceType() == '0')
+                            {
+                                legalMovesList[3].Add("B" + tiles[tempIndex - 7].getName());
+                            }
+                            else if (tiles[tempIndex - 7].getPieceColor() != tiles[i].getPieceColor())
+                            {
+                                legalMovesList[3].Add("Bx" + tiles[tempIndex - 7].getName());
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            tempIndex -= 7;
+                        }
+
+                        // move down left
+                        tempIndex = i;
+                        while ((tempIndex % 8 != 0) && (tempIndex - 9 >= 0))
+                        {
+                            if (tiles[tempIndex - 9].getPieceType() == '0')
+                            {
+                                legalMovesList[3].Add("B" + tiles[tempIndex - 9].getName());
+                            }
+                            else if (tiles[tempIndex - 9].getPieceColor() != tiles[i].getPieceColor())
+                            {
+                                legalMovesList[3].Add("Bx" + tiles[tempIndex - 9].getName());
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            tempIndex -= 9;
+                        }
+
+                        break;
+
+                        
+
+
+                    case 'n':
+                        break;
+                    case 'p':
+                        break;
+                }
+            }
+        }
+
+        Debug.Log("Legal moves list created");
+        return legalMovesList;
     }
 
     string getNewBoardstate()
@@ -296,7 +789,7 @@ public class displayBoard : MonoBehaviour
     }
 }
 
-class Fen
+public class Fen
 {
     public string Board { get; private set; }
     public string ActiveColor { get; private set; }
@@ -337,17 +830,23 @@ class Fen
     }
 }
 
-class Tile
+public class Tile
 {
     private int num;
     private string name;
     private char curPiece;
+
+    private char pieceType;
+    private char pieceColor;
 
     public Tile(int num, string name)
     {
         this.num = num;
         this.name = name;
         curPiece = '0';
+        pieceType = '0';
+
+        
     }
 
     public bool hasPiece()
@@ -358,6 +857,8 @@ class Tile
     public void changeCurPiece(char newPiece)
     {
         curPiece = newPiece;
+        pieceType = Char.ToLower(curPiece);
+        pieceColor = Char.IsUpper(curPiece) ? 'w' : 'b';
     }
     
     public char getCurPiece()
@@ -373,4 +874,14 @@ class Tile
     {
         return name;
     }
+
+    public char getPieceType()
+    {
+        return pieceType;
+    }
+
+    public char getPieceColor()
+    {
+        return pieceColor;
+    }   
 }
