@@ -31,8 +31,8 @@ public class DisplayBoard : MonoBehaviour
     //fen
     //"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-    public const string startFen = "7k/8/6n1/8/8/3P4/P7/8 w KQkq - 0 1";
-    Fen curFen = null;
+    public const string startFen = "7k/8/6n1/8/8/3P4/P7/8 b KQkq - 0 1";
+    Fen curFen;
 
     //tiles
     public const float tileSize = 1.0f;
@@ -48,11 +48,6 @@ public class DisplayBoard : MonoBehaviour
 
         CreateGraphicalBoard();
         placePieces();
-
-        for (int j = 0; j < 6; j++)
-        {
-            curMoveList[j] = new List<string>();
-        }
     }
 
     private void Update()
@@ -63,14 +58,8 @@ public class DisplayBoard : MonoBehaviour
     void move()
     {
 
-        legalMovesList legalMovesList = new legalMovesList();
-        legalMovesList.getLegalMoves(tiles);
-
-        for (int i = 0; i < 6; i++)
-        {
-            curMoveList[i] = legalMovesList.getLegalMoves(tiles);
-        }
-
+        LegalMovesList legalMovesList = new LegalMovesList();
+        string[] moves = legalMovesList.getLegalMoves(tiles, curFen);
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -111,12 +100,13 @@ public class DisplayBoard : MonoBehaviour
                             if (targetTile.getCurPiece() != '0')
                             {
                                 attemptedMove = Char.ToUpper(selectedTile.getPieceType()) + "x" + targetTile.getName();
-                                Debug.Log("Attempted move: " + attemptedMove);
                             }
 
-                            /*if (isLegalMove(attemptedMove))
-                            {*/
-                               
+                            Debug.Log("Attempted move: " + attemptedMove);
+
+                            if (isLegalMove(attemptedMove, moves))
+                            {
+
                                 targetTile.changeCurPiece(selectedTile.getCurPiece());
                                 selectedTile.changeCurPiece('0');
 
@@ -138,7 +128,7 @@ public class DisplayBoard : MonoBehaviour
 
                                 placePieces();
                                 Debug.Log(curFen.ToString());
-                            //}
+                            }
                         }
                     }
                 }
@@ -146,20 +136,9 @@ public class DisplayBoard : MonoBehaviour
         }
     }
 
-    bool isLegalMove(string attemptedMove)
+    bool isLegalMove(string attemptedMove, string[] moves)
     {
-        for (int i = 0; i < 6; i++)
-        {
-            foreach (string move in curMoveList[i])
-            {
-                if (move == attemptedMove)
-                {
-                    return true;
-                }
-            }
-
-        }
-        return false;
+        return moves[MoveHasher.ChessMoveToHash(attemptedMove)] == attemptedMove;
     }
 
     string getNewBoardstate()
@@ -337,115 +316,5 @@ public class DisplayBoard : MonoBehaviour
                 tileNum++;
             }
         }
-    }
-}
-
-
-public class Fen
-{
-    public string Board { get; private set; }
-    public string ActiveColor { get; private set; }
-    public string CastlingAvailability { get; private set; }
-    public string EnPassantTarget { get; private set; }
-    public int HalfmoveClock { get; private set; }
-    public int FullmoveNumber { get; private set; }
-
-    public Fen(string fen)
-    {
-        ParseFen(fen);
-    }
-
-    private void ParseFen(string fen)
-    {
-        string[] parts = fen.Split(' ');
-        if (parts.Length != 6)
-        {
-            throw new ArgumentException("Invalid FEN string");
-        }
-
-        Board = parts[0];
-        ActiveColor = parts[1];
-        CastlingAvailability = parts[2];
-        EnPassantTarget = parts[3];
-        HalfmoveClock = int.Parse(parts[4]);
-        FullmoveNumber = int.Parse(parts[5]);
-    }
-
-    public string getBoard()
-    {
-        return Board;
-    }
-
-    public override string ToString()
-    {
-        return $"{Board} {ActiveColor} {CastlingAvailability} {EnPassantTarget} {HalfmoveClock} {FullmoveNumber}";
-    }
-}
-
-public class Tile
-{
-    private int num;
-    private string name;
-    private char curPiece;
-
-    private char pieceType;
-    private char pieceColor;
-
-    private bool isLegalMove;
-
-    public Tile(int num, string name)
-    {
-        this.num = num;
-        this.name = name;
-        curPiece = '0';
-        pieceType = '0';
-
-
-    }
-
-    public bool hasPiece()
-    {
-        return !Char.IsDigit(curPiece);
-    }
-
-    public void changeCurPiece(char newPiece)
-    {
-        curPiece = newPiece;
-        pieceType = Char.ToLower(curPiece);
-        pieceColor = Char.IsUpper(curPiece) ? 'w' : 'b';
-    }
-
-    public char getCurPiece()
-    {
-        return curPiece;
-    }
-
-    public int getNum()
-    {
-        return num;
-    }
-    public string getName()
-    {
-        return name;
-    }
-
-    public void setLegalMove(bool isLegalMove)
-    {
-        this.isLegalMove = isLegalMove;
-    }
-
-    public bool getLegalMove()
-    {
-        return isLegalMove;
-    }
-
-    public char getPieceType()
-    {
-        return pieceType;
-    }
-
-    public char getPieceColor()
-    {
-        return pieceColor;
     }
 }

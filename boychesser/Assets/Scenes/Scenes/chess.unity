@@ -132,8 +132,6 @@ GameObject:
   m_Component:
   - component: {fileID: 420982748}
   - component: {fileID: 420982747}
-  - component: {fileID: 420982746}
-  - component: {fileID: 420982749}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -141,14 +139,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &420982746
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 420982745}
-  m_Enabled: 1
 --- !u!20 &420982747
 Camera:
   m_ObjectHideFlags: 0
@@ -215,50 +205,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &420982749
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 420982745}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_RenderShadows: 1
-  m_RequiresDepthTextureOption: 2
-  m_RequiresOpaqueTextureOption: 2
-  m_CameraType: 0
-  m_Cameras: []
-  m_RendererIndex: -1
-  m_VolumeLayerMask:
-    serializedVersion: 2
-    m_Bits: 1
-  m_VolumeTrigger: {fileID: 0}
-  m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
-  m_Antialiasing: 0
-  m_AntialiasingQuality: 2
-  m_StopNaN: 0
-  m_Dithering: 0
-  m_ClearDepth: 1
-  m_AllowXRRendering: 1
-  m_AllowHDROutput: 1
-  m_UseScreenCoordOverride: 0
-  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
-  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
-  m_RequiresDepthTexture: 0
-  m_RequiresColorTexture: 0
-  m_Version: 2
-  m_TaaSettings:
-    m_Quality: 3
-    m_FrameInfluence: 0.1
-    m_JitterScale: 1
-    m_MipBias: 0
-    m_VarianceClampScale: 0.9
-    m_ContrastAdaptiveSharpening: 0
 --- !u!1 &509483828
 GameObject:
   m_ObjectHideFlags: 0
@@ -290,18 +236,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lightCol: {fileID: 7410974056255760042, guid: 5e1ce673a44d06844a075137b38ca5cf, type: 3}
   darkCol: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
-  w_k: {fileID: 4516552371317375738, guid: 3afef2ddd3e981a498bfe8d151fbd059, type: 3}
-  w_q: {fileID: 4643889244682741647, guid: 0368b40e56e710f4781e60dc4d44982c, type: 3}
-  w_r: {fileID: 8300949453665265850, guid: 13a5dabb5b018f44a92784d2479f9ab5, type: 3}
-  w_b: {fileID: 4777869354942783236, guid: 063e8f932948b834d9c1eae09db173a7, type: 3}
-  w_n: {fileID: 23977595573481102, guid: ba5596b5b53b9db429ee8ed2a8d9ad15, type: 3}
-  w_p: {fileID: 1270115563505321174, guid: 4b066e86b9b07624ab41db4291a653cf, type: 3}
-  b_k: {fileID: 3108631914097339719, guid: 1be652868ae619544a26618ba9d4ae77, type: 3}
-  b_q: {fileID: 4586587815035538126, guid: ef38a6f6ab5b34f4ea3b46147419f962, type: 3}
-  b_r: {fileID: 4898601547341968620, guid: c4763ee5191998a4f87d4b01ae735e10, type: 3}
-  b_b: {fileID: 2478021757961322102, guid: b4567eaf795cc2a4dab54721fe8dd299, type: 3}
-  b_n: {fileID: 8433670068204593255, guid: e38436c14f43a9f4b8c5fcf3027db04c, type: 3}
-  b_p: {fileID: 2407193562634646360, guid: 5ec392b16f3c9b74bb64b7445a2ad463, type: 3}
+  w_k: {fileID: 2055799978320434842, guid: c467369d151ea4845b8cb92f5e1ba5cf, type: 3}
+  w_q: {fileID: 2055799978320434842, guid: e85bd7f43d08e80429eeb1c95e5f3365, type: 3}
+  w_r: {fileID: 2055799978320434842, guid: f936f95419fd5c74dbfbbb784d0658c4, type: 3}
+  w_b: {fileID: 2055799978320434842, guid: 39439791120cadd4bb9004c0fdf9f38d, type: 3}
+  w_n: {fileID: 2055799978320434842, guid: 17fed97a14cfd604b87d80aa4112aecd, type: 3}
+  w_p: {fileID: 2055799978320434842, guid: b8307998cff36cc4ab59549213e60ad9, type: 3}
+  b_k: {fileID: 108064482171880929, guid: 4baca48ad221bfd478281aa6199bb936, type: 3}
+  b_q: {fileID: 108064482171880929, guid: aaacfa9b9de52fd43bd7b5a387f87b9c, type: 3}
+  b_r: {fileID: 108064482171880929, guid: cf739d50ad56c624ab2c0b629fd4f338, type: 3}
+  b_b: {fileID: 108064482171880929, guid: 49db8031849d78d48b58034486ff9065, type: 3}
+  b_n: {fileID: 108064482171880929, guid: f06ef46c8688284488a874fbacdf517b, type: 3}
+  b_p: {fileID: 108064482171880929, guid: d1bb34f9180379c4c8f8e98098d9b8bb, type: 3}
 --- !u!4 &509483830
 Transform:
   m_ObjectHideFlags: 0

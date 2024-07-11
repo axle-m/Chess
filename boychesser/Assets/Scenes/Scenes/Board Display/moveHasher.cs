@@ -12,7 +12,7 @@ public class MoveHasher : MonoBehaviour
         //dictionary for piece file and rank mapping
         var movePatterns = new Dictionary<char, int>
         {
-            { 'Q', 1 }, { 'R', 2 }, { 'B', 3 }, { 'N', 4 }, { 'K', 5 },
+            { 'P', 0 }, { 'Q', 1 }, { 'R', 2 }, { 'B', 3 }, { 'N', 4 }, { 'K', 5 },
             { 'a', 0 }, { 'b', 1 }, { 'c', 2 }, { 'd', 3 }, { 'e', 4 }, { 'f', 5 }, { 'g', 6 }, { 'h', 7 },
             { '1', 0 }, { '2', 1 }, { '3', 2 }, { '4', 3 }, { '5', 4 }, { '6', 5 }, { '7', 6 }, { '8', 7 }
         };
@@ -62,7 +62,8 @@ public class MoveHasher : MonoBehaviour
 
         int hashCode = (pieceCode * 4096) + (fileToCode * 512) + (rankToCode * 64) + (fileFromHashValue * 8) + (RankFromHashValue);
 
-        // Ensure the hash is between 0 and 217 inclusive
+        //maximum number of legal moves in a given chess position is cited as 218
+        //while this is not exact, and highly unlikely, it is a good upper bound
         hashCode %= 218;
 
         return hashCode;
