@@ -5,11 +5,12 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-public class displayBoard : MonoBehaviour
+public class testing : MonoBehaviour
 {
 
     public GameObject lightCol;
     public GameObject darkCol;
+    public GameObject selectedCol;
 
 
     //pieces
@@ -29,8 +30,8 @@ public class displayBoard : MonoBehaviour
 
     //fen
     //"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-
-    public const string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    
+    public const string startFen = "8/8/8/8/3Q4/8/8/8 w KQkq - 0 1";
     Fen curFen = null;
 
     //tiles
@@ -45,10 +46,10 @@ public class displayBoard : MonoBehaviour
     {
         curFen = new Fen(startFen);
 
-        CreateGraphicalBoard();
-        placePieces();
-
+        createBoard();
         legalMovesList();
+        displayBoard();
+        placePieces();
     }
 
     private void Update()
@@ -64,10 +65,10 @@ public class displayBoard : MonoBehaviour
             {
 
                 var mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                mouseWorldPos.z = 0f;
+                mouseWorldPos.z = 0f;              
 
                 //identify target tile
-                if (mouseWorldPos.x > -4.0f && mouseWorldPos.x < 4.0f && mouseWorldPos.y > -4.0f && mouseWorldPos.y < 4.0f)
+                if(mouseWorldPos.x > -4.0f && mouseWorldPos.x < 4.0f && mouseWorldPos.y > -4.0f && mouseWorldPos.y < 4.0f)
                 {
                     int file = Mathf.FloorToInt(0.5f + (mouseWorldPos.x + 4.0f) / tileSize);
                     int rank = Mathf.FloorToInt(0.5f + (mouseWorldPos.y + 4.0f) / tileSize);
@@ -82,11 +83,11 @@ public class displayBoard : MonoBehaviour
                             Debug.Log(selectedTile.getCurPiece());
 
                             //reset selected tile if no piece is on the tile
-                            if (selectedTile.getCurPiece() == '0')
+                            if(selectedTile.getCurPiece() == '0')
                             {
                                 selectedTile = null;
                             }
-                        }
+                        } 
 
                         //if a tile is selected, move the piece from the selected tile to the target tile
                         else if (selectedTile != null)
@@ -95,14 +96,14 @@ public class displayBoard : MonoBehaviour
                             Debug.Log(targetTile.getName());
 
                             targetTile.changeCurPiece(selectedTile.getCurPiece());
-                            selectedTile.changeCurPiece('0');
+                            selectedTile.changeCurPiece('0');                          
 
                             //reset selected and target tiles
                             selectedTile = null;
                             targetTile = null;
 
                             //updaete fen
-
+                            
                             curFen = new Fen(createNewFen(null));
                             //replace pieces
 
@@ -122,12 +123,14 @@ public class displayBoard : MonoBehaviour
     }
     //TODO: implement putsInCheck
 
-    bool putsInCheck(int i)
+    bool putsInCheck()
     {
         return false;
     }
 
-    List<string>[] legalMovesList()
+
+
+     List<string>[] legalMovesList()
     {
         List<string>[] legalMovesList = new List<string>[6];
 
@@ -144,48 +147,130 @@ public class displayBoard : MonoBehaviour
             bool isTopEdge = i > 55;
             bool isBottomEdge = i < 8;
 
-            int[] knightMoves = { 15, 17, 10, 6, -15, -17, -10, -6 };
-            int[] kingMoves = { 1, -1, 8, -8, 9, 7, -9, -7 };
-
             if (tiles[i].hasPiece())
             {
                 switch (tiles[i].getPieceType())
                 {
-                    case 'k': 
-                        foreach (int move in kingMoves)
+                    case 'k':
+
+                        while (!exhaustedMoves)
                         {
-                            int destinationIndex = i + move;
 
-                            // Check if the move is within the bounds of the board
-                            if (destinationIndex >= 0 && destinationIndex < 64)
+                            if (!isLeftEdge)
                             {
-                                // Additional check to ensure king doesn't wrap around the board edges
-                                int currentRow = i / 8;
-                                int destinationRow = destinationIndex / 8;
-                                int rowDifference = Math.Abs(currentRow - destinationRow);
-
-                                // Check for valid king move within the same row or adjacent row
-                                if (rowDifference <= 1)
+                                //move up left
+                                if (i + 7 < 63 && tiles[i + 7].getPieceType() == '0' && !putsInCheck())
                                 {
-                                    if (tiles[destinationIndex].getPieceType() == '0' && !putsInCheck(destinationIndex))
-                                    {
-                                        legalMovesList[0].Add("K" + tiles[destinationIndex].getName());
-                                    }
-                                    else if (tiles[destinationIndex].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck(destinationIndex))
-                                    {
-                                        legalMovesList[0].Add("Kx" + tiles[destinationIndex].getName());
-                                    }
+                                    legalMovesList[0].Add("K" + tiles[i + 7].getName());
+                                    tiles[i].setLegalMove(true);
+                                }
+                                else if (i + 7 < 63 && tiles[i + 7].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("Kx" + tiles[i + 7].getName());
+                                    tiles[i].setLegalMove(true);
+                                }
+
+                                //move down left
+                                if (i - 7 > 0 && tiles[i - 7].getPieceType() == '0' && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("K" + tiles[i - 7].getName());
+                                    tiles[i].setLegalMove(true);
+                                }
+                                else if (i - 7 > 0 && tiles[i - 7].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("Kx" + tiles[i - 7].getName());
+                                    tiles[i].setLegalMove(true);
+                                }
+
+                                //move left
+                                if (i - 1 > 0 && tiles[i - 1].getPieceType() == '0' && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("K" + tiles[i - 1].getName());
+                                    tiles[i].setLegalMove(true);
+                                }
+                                else if (i - 1 > 0 && tiles[i + 1].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("Kx" + tiles[i - 1].getName());
+                                    tiles[i].setLegalMove(true);
                                 }
                             }
+
+                            if (!isRightEdge)
+                            {
+                                //move up right
+                                if (i + 9 < 63 && tiles[i + 9].getPieceType() == '0' && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("K" + tiles[i + 9].getName());
+                                    tiles[i].setLegalMove(true);
+                                }
+                                else if (i + 9 < 63 && tiles[i + 9].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("Kx" + tiles[i + 9].getName());
+                                    tiles[i].setLegalMove(true);
+                                }
+
+                                //move down right
+                                if (i - 8 > 0 && tiles[i - 9].getPieceType() == '0' && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("K" + tiles[i - 8].getName());
+                                    tiles[i].setLegalMove(true);
+                                }
+                                else if (i - 8 > 0 && tiles[i - 8].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("Kx" + tiles[i - 8].getName());
+                                    tiles[i].setLegalMove(true);
+                                }
+
+                                //move right
+                                if (i + 1 < 63 && tiles[i + 1].getPieceType() == '0' && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("K" + tiles[i - 7].getName());
+                                    tiles[i].setLegalMove(true);
+                                }
+                                else if (i + 1 < 63 && tiles[i + 1].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck())
+                                {
+                                    legalMovesList[0].Add("Kx" + tiles[i + 1].getName());
+                                    tiles[i].setLegalMove(true);
+                                }
+                            }
+
+
+                            //move up
+                            if (i + 8 < 63 && tiles[i + 8].getPieceType() == '0' && !putsInCheck())
+                            {
+                                legalMovesList[0].Add("K" + tiles[i + 8].getName());
+                                tiles[i].setLegalMove(true);
+                            }
+                            else if (i + 8 < 63 && tiles[i + 8].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck())
+                            {
+                                legalMovesList[0].Add("Kx" + tiles[i + 8].getName());
+                                tiles[i].setLegalMove(true);
+                            }
+
+                            //move down
+                            if (i - 8 > 0 && tiles[i - 8].getPieceType() == '0' && !putsInCheck())
+                            {
+                                legalMovesList[0].Add("K" + tiles[i - 8].getName());
+                                tiles[i].setLegalMove(true);
+                            }
+                            else if (i - 8 > 0 && tiles[i - 8].getPieceColor() != tiles[i].getPieceColor() && !putsInCheck())
+                            {
+                                legalMovesList[0].Add("Kx" + tiles[i - 8].getName());
+                                tiles[i].setLegalMove(true);
+                            }
+
+                            else
+                            {
+                                exhaustedMoves = true;
+                            }   
                         }
-                        
+
                         break;
 
-                        
 
 
                     case 'q':
-
+                        
                         //vertical moves
 
                         //move up
@@ -227,7 +312,7 @@ public class displayBoard : MonoBehaviour
                             }
                             else
                             {
-                                break;
+                                break;  
                             }
                             tempIndex -= 8;
                         }
@@ -254,11 +339,11 @@ public class displayBoard : MonoBehaviour
                                 break;
                             }
                             tempIndex += 1;
-                        }
-
+                        }     
+                        
                         //move left
                         tempIndex = i;
-                        while (tempIndex % 8 != 0)
+                        while(tempIndex % 8 != 0)
                         {
                             if (tiles[tempIndex - 1].getPieceType() == '0')
                             {
@@ -471,8 +556,8 @@ public class displayBoard : MonoBehaviour
 
 
                     case 'b':
-
-                        //move up right
+                        
+                       //move up right
                         tempIndex = i;
                         while ((tempIndex % 8 != 7) && (tempIndex + 9 <= 63))
                         {
@@ -563,92 +648,15 @@ public class displayBoard : MonoBehaviour
                         break;
 
                     case 'n':
-
-                        foreach (int move in knightMoves)
-                        {
-                            int destinationIndex = i + move;
-
-                            // Check if the move is within the bounds of the board
-                            if (destinationIndex >= 0 && destinationIndex < 64)
-                            {
-                                // Additional check to ensure knight doesn't wrap around the board edges
-                                int currentRow = i / 8;
-                                int destinationRow = destinationIndex / 8;
-                                int rowDifference = Math.Abs(currentRow - destinationRow);
-
-                                // Check for valid knight move within the same row or adjacent row
-                                if (rowDifference == 1 || rowDifference == 2)
-                                {
-                                    if (tiles[destinationIndex].getPieceType() == '0')
-                                    {
-                                        legalMovesList[4].Add("N" + tiles[destinationIndex].getName());
-                                    }
-                                    else if (tiles[destinationIndex].getPieceColor() != pieceColor)
-                                    {
-                                        legalMovesList[4].Add("Nx" + tiles[destinationIndex].getName());
-                                    }
-                                }
-                            }
-                        }
-
                         break;
                     case 'p':
-
-                        switch (tiles[i].getPieceColor())
-                        {
-                            case 'w':
-                                if (i + 8 < 64 && tiles[i + 8].getPieceType() == '0')
-                                {
-                                    legalMovesList[5].Add(tiles[i + 8].getName());
-                                }
-
-                                if (i + 16 < 64 && i < 16 && tiles[i + 16].getPieceType() == '0')
-                                {
-                                    legalMovesList[5].Add(tiles[i + 16].getName());
-                                }
-
-                                if (i + 7 < 64 && !isRightEdge && tiles[i + 7].getPieceColor() == 'b')
-                                {
-                                    legalMovesList[5].Add(tiles[i].getName().Substring(0, 1) + tiles[i + 7].getName());
-                                }
-
-                                if (i + 9 < 64 && !isLeftEdge && tiles[i + 9].getPieceColor() == 'b')
-                                {
-                                    legalMovesList[5].Add(tiles[i].getName().Substring(0, 1) + tiles[i + 9].getName());
-                                }
-
-                                break;     
-                            case 'b':
-                                if (i - 8 >= 0 && tiles[i - 8].getPieceType() == '0')
-                                {
-                                    legalMovesList[5].Add(tiles[i - 8].getName());
-                                }
-
-                                if (i - 16 >= 0 && i > 47 && tiles[i - 16].getPieceType() == '0')
-                                {
-                                    legalMovesList[5].Add(tiles[i - 16].getName());
-                                }
-
-                                if (i - 7 >= 0 && !isLeftEdge && tiles[i - 7].getPieceColor() == 'w')
-                                {
-                                    legalMovesList[5].Add(tiles[i].getName().Substring(0,1) + "x" + tiles[i - 7].getName());
-                                }
-
-                                if (i - 9 >= 0 && !isRightEdge && tiles[i - 9].getPieceColor() == 'w')
-                                {
-                                    legalMovesList[5].Add(tiles[i].getName().Substring(0, 1) + tiles[i - 9].getName());
-                                }
-
-                                break;  
-                        }
-
                         break;
                 }
             }
         }
-    
+
+        Debug.Log("Legal moves list created");
         return legalMovesList;
-    
     }
 
     string getNewBoardstate()
@@ -695,7 +703,7 @@ public class displayBoard : MonoBehaviour
 
     string createNewFen(string moveType)
     {
-
+        
         // Extract the other parts of the previous FEN
         string curFenString = curFen.ToString();
         string[] fenParts = curFenString.Split(' ');
@@ -804,137 +812,36 @@ public class displayBoard : MonoBehaviour
         }
     }
 
-    void CreateGraphicalBoard()
+    void createBoard()
     {
 
         int tileNum = 0;
 
-        for (int file = 0; file < 8; file++)
+        for(int file = 0; file < 8; file++)
         {
-            for (int rank = 0; rank < 8; rank++)
+            for (int rank  = 0; rank < 8; rank++)
             {
-                bool isLightSquare = (file + rank) % 2 != 0;
-
-                GameObject squareColor = (isLightSquare) ? lightCol : darkCol;
-
-                GameObject tile = Instantiate(squareColor, new Vector3(file * tileSize - 4.0f, rank * tileSize - 4.0f), Quaternion.identity);
-
-
+               
                 string tileName = ranks[rank] + files[file];
                 Tile t = new Tile(tileNum, tileName);
                 tiles[tileNum] = t;
                 tileNum++;
+
             }
         }
     }
-}
-
-
-public class Fen
-{
-    public string Board { get; private set; }
-    public string ActiveColor { get; private set; }
-    public string CastlingAvailability { get; private set; }
-    public string EnPassantTarget { get; private set; }
-    public int HalfmoveClock { get; private set; }
-    public int FullmoveNumber { get; private set; }
-
-    public Fen(string fen)
+    void displayBoard()
     {
-        ParseFen(fen);
-    }
 
-    private void ParseFen(string fen)
-    {
-        string[] parts = fen.Split(' ');
-        if (parts.Length != 6)
+        foreach (Tile t in tiles)
         {
-            throw new ArgumentException("Invalid FEN string");
+            bool isLightSquare = (t.getNum() % 8 + (int)t.getNum() / 8) % 2 != 0;
+
+            GameObject squareColor = (isLightSquare) ? lightCol : darkCol;
+
+            if (tiles[t.getNum()].getLegalMove()) squareColor = selectedCol;
+
+            GameObject tile = Instantiate(squareColor, new Vector3((t.getNum() % 8) * tileSize - 4.0f, (t.getNum() / 8) * tileSize - 4.0f), Quaternion.identity);
         }
-
-        Board = parts[0];
-        ActiveColor = parts[1];
-        CastlingAvailability = parts[2];
-        EnPassantTarget = parts[3];
-        HalfmoveClock = int.Parse(parts[4]);
-        FullmoveNumber = int.Parse(parts[5]);
-    }
-
-    public string getBoard()
-    {
-        return Board;
-    }
-
-    public override string ToString()
-    {
-        return $"{Board} {ActiveColor} {CastlingAvailability} {EnPassantTarget} {HalfmoveClock} {FullmoveNumber}";
-    }
-}
-
-public class Tile
-{
-    private int num;
-    private string name;
-    private char curPiece;
-
-    private char pieceType;
-    private char pieceColor;
-
-    private bool isLegalMove;
-
-    public Tile(int num, string name)
-    {
-        this.num = num;
-        this.name = name;
-        curPiece = '0';
-        pieceType = '0';
-
-
-    }
-
-    public bool hasPiece()
-    {
-        return !Char.IsDigit(curPiece);
-    }
-
-    public void changeCurPiece(char newPiece)
-    {
-        curPiece = newPiece;
-        pieceType = Char.ToLower(curPiece);
-        pieceColor = Char.IsUpper(curPiece) ? 'w' : 'b';
-    }
-
-    public char getCurPiece()
-    {
-        return curPiece;
-    }
-
-    public int getNum()
-    {
-        return num;
-    }
-    public string getName()
-    {
-        return name;
-    }
-
-    public void setLegalMove(bool isLegalMove)
-    {
-        this.isLegalMove = isLegalMove;
-    }
-
-    public bool getLegalMove()
-    {
-        return isLegalMove;
-    }
-
-    public char getPieceType()
-    {
-        return pieceType;
-    }
-
-    public char getPieceColor()
-    {
-        return pieceColor;
     }
 }
