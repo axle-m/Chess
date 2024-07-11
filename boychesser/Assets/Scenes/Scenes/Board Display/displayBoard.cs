@@ -26,11 +26,14 @@ public class displayBoard : MonoBehaviour
     public GameObject b_n;
     public GameObject b_p;
 
+    string[] pieceTypeIndex = new string[] { "k", "q", "r", "b", "n", "p" };
+
+    List<string>[] curMoveList = new List<string>[6];
 
     //fen
     //"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-    public const string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    public const string startFen = "7k/8/6n1/8/8/3P4/P7/8 w KQkq - 0 1";
     Fen curFen = null;
 
     //tiles
@@ -48,7 +51,10 @@ public class displayBoard : MonoBehaviour
         CreateGraphicalBoard();
         placePieces();
 
-        legalMovesList();
+        for (int j = 0; j < 6; j++)
+        {
+            curMoveList[j] = new List<string>();
+        }
     }
 
     private void Update()
@@ -58,6 +64,10 @@ public class displayBoard : MonoBehaviour
 
     void move()
     {
+
+        legalMovesList();
+
+
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 mousePos = Input.mousePosition;
@@ -92,34 +102,61 @@ public class displayBoard : MonoBehaviour
                         else if (selectedTile != null)
                         {
                             targetTile = tiles[file + rank * 8];
-                            Debug.Log(targetTile.getName());
 
-                            targetTile.changeCurPiece(selectedTile.getCurPiece());
-                            selectedTile.changeCurPiece('0');
-
-                            //reset selected and target tiles
-                            selectedTile = null;
-                            targetTile = null;
-
-                            //updaete fen
-
-                            curFen = new Fen(createNewFen(null));
-                            //replace pieces
-
-                            GameObject[] pieces = GameObject.FindGameObjectsWithTag("piece");
-                            foreach (GameObject obj in pieces)
+                            string attemptedMove = Char.ToUpper(selectedTile.getPieceType()) + targetTile.getName();
+                            if (targetTile.getCurPiece() != '0')
                             {
-                                Destroy(obj);
+                                attemptedMove = Char.ToUpper(selectedTile.getPieceType()) + "x" + targetTile.getName();
                             }
 
-                            placePieces();
-                            Debug.Log(curFen.ToString());
+                            if (isLegalMove(attemptedMove))
+                            {
+                               
+                                targetTile.changeCurPiece(selectedTile.getCurPiece());
+                                selectedTile.changeCurPiece('0');
+
+                                //reset selected and target tiles
+                                selectedTile = null;
+                                targetTile = null;
+
+                                //updaete fen
+
+                                curFen = new Fen(createNewFen(attemptedMove));
+
+                                //replace pieces
+
+                                GameObject[] pieces = GameObject.FindGameObjectsWithTag("piece");
+                                foreach (GameObject obj in pieces)
+                                {
+                                    Destroy(obj);
+                                }
+
+                                placePieces();
+                                Debug.Log(curFen.ToString());
+                            }
                         }
                     }
                 }
             }
         }
     }
+
+    bool isLegalMove(string attemptedMove)
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            foreach (string move in curMoveList[i])
+            {
+                if (move == attemptedMove)
+                {
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    }
+
     //TODO: implement putsInCheck
 
     bool putsInCheck(int i)
@@ -138,16 +175,17 @@ public class displayBoard : MonoBehaviour
 
         for (int i = 0; i < 64; i++)
         {
-            bool exhaustedMoves = false;
             bool isLeftEdge = i % 8 == 0;
             bool isRightEdge = i % 8 == 7;
             bool isTopEdge = i > 55;
             bool isBottomEdge = i < 8;
 
+            //char movingPiece = curFen.ActiveColor == "w" ? 'w' : 'b';
+
             int[] knightMoves = { 15, 17, 10, 6, -15, -17, -10, -6 };
             int[] kingMoves = { 1, -1, 8, -8, 9, 7, -9, -7 };
 
-            if (tiles[i].hasPiece())
+            if (tiles[i] != null && tiles[i].hasPiece() /*&& tiles[i].getPieceType() == movingPiece*/)
             {
                 switch (tiles[i].getPieceType())
                 {
@@ -156,16 +194,14 @@ public class displayBoard : MonoBehaviour
                         {
                             int destinationIndex = i + move;
 
-                            // Check if the move is within the bounds of the board
+                            //bounds check
                             if (destinationIndex >= 0 && destinationIndex < 64)
                             {
-                                // Additional check to ensure king doesn't wrap around the board edges
-                                int currentRow = i / 8;
-                                int destinationRow = destinationIndex / 8;
-                                int rowDifference = Math.Abs(currentRow - destinationRow);
+                                //wraparound check
+                                int targetFile = destinationIndex % 8;
+                                int curFile = i % 8;
 
-                                // Check for valid king move within the same row or adjacent row
-                                if (rowDifference <= 1)
+                                if (curFile - targetFile == 1)
                                 {
                                     if (tiles[destinationIndex].getPieceType() == '0' && !putsInCheck(destinationIndex))
                                     {
@@ -568,22 +604,20 @@ public class displayBoard : MonoBehaviour
                         {
                             int destinationIndex = i + move;
 
-                            // Check if the move is within the bounds of the board
+                            //bounds check
                             if (destinationIndex >= 0 && destinationIndex < 64)
                             {
-                                // Additional check to ensure knight doesn't wrap around the board edges
-                                int currentRow = i / 8;
-                                int destinationRow = destinationIndex / 8;
-                                int rowDifference = Math.Abs(currentRow - destinationRow);
-
-                                // Check for valid knight move within the same row or adjacent row
-                                if (rowDifference == 1 || rowDifference == 2)
+                                //wraparound check
+                                int targetFile = destinationIndex % 8;
+                                int curFile = i % 8;
+                               
+                                if (Math.Abs(targetFile - curFile) == 2 || Math.Abs(targetFile - curFile)== 1)
                                 {
                                     if (tiles[destinationIndex].getPieceType() == '0')
                                     {
                                         legalMovesList[4].Add("N" + tiles[destinationIndex].getName());
                                     }
-                                    else if (tiles[destinationIndex].getPieceColor() != pieceColor)
+                                    else if (tiles[destinationIndex].getPieceColor() != tiles[i].getPieceColor())
                                     {
                                         legalMovesList[4].Add("Nx" + tiles[destinationIndex].getName());
                                     }
@@ -646,9 +680,17 @@ public class displayBoard : MonoBehaviour
                 }
             }
         }
-    
+
+        for (int i = 0; i < 6; i++)
+        {
+            foreach (string move in legalMovesList[i])
+            {
+                curMoveList[i].Add(move);
+            }
+        }
+
         return legalMovesList;
-    
+
     }
 
     string getNewBoardstate()
