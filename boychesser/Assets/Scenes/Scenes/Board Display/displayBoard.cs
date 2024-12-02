@@ -31,14 +31,14 @@ public class DisplayBoard : MonoBehaviour
     //fen
     //"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-    public const string startFen = "7k/8/6n1/8/8/3P4/P7/8 b KQkq - 0 1";
+    public const string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     Fen curFen;
 
     //tiles
     public const float tileSize = 1.0f;
     public Tile[] tiles = new Tile[64];
-    string[] ranks = new string[] { "a", "b", "c", "d", "e", "f", "g", "h" };
-    string[] files = new string[] { "1", "2", "3", "4", "5", "6", "7", "8" };
+    readonly  string[] ranks = new string[] { "a", "b", "c", "d", "e", "f", "g", "h" };
+    readonly string[] files = new string[] { "1", "2", "3", "4", "5", "6", "7", "8" };
     Tile selectedTile = null;
     Tile targetTile = null;
 
@@ -72,6 +72,8 @@ public class DisplayBoard : MonoBehaviour
                 //identify target tile
                 if (mouseWorldPos.x > -4.0f && mouseWorldPos.x < 4.0f && mouseWorldPos.y > -4.0f && mouseWorldPos.y < 4.0f)
                 {
+
+                    //convert mouse position to file and rank
                     int file = Mathf.FloorToInt(0.5f + (mouseWorldPos.x + 4.0f) / tileSize);
                     int rank = Mathf.FloorToInt(0.5f + (mouseWorldPos.y + 4.0f) / tileSize);
 
@@ -114,7 +116,7 @@ public class DisplayBoard : MonoBehaviour
                                 selectedTile = null;
                                 targetTile = null;
 
-                                //updaete fen
+                                //update fen
 
                                 curFen = new Fen(createNewFen(attemptedMove));
 
@@ -128,6 +130,14 @@ public class DisplayBoard : MonoBehaviour
 
                                 placePieces();
                                 Debug.Log(curFen.ToString());
+                            } 
+                            
+                            else
+                            {
+                                selectedTile = null;
+                                targetTile = null;
+
+                                Debug.Log(attemptedMove + " is not a legal move");
                             }
                         }
                     }
@@ -138,6 +148,7 @@ public class DisplayBoard : MonoBehaviour
 
     bool isLegalMove(string attemptedMove, string[] moves)
     {
+        if (Char.ToLower(attemptedMove[0]) == 'p') attemptedMove = attemptedMove.Substring(1);
         return moves[MoveHasher.ChessMoveToHash(attemptedMove)] == attemptedMove;
     }
 
@@ -311,7 +322,7 @@ public class DisplayBoard : MonoBehaviour
 
 
                 string tileName = ranks[rank] + files[file];
-                Tile t = new Tile(tileNum, tileName);
+                Tile t = new Tile(tileNum, tileName, tileNum);
                 tiles[tileNum] = t;
                 tileNum++;
             }

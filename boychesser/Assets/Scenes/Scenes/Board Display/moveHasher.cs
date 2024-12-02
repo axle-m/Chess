@@ -2,12 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.UIElements;
 
-public class MoveHasher : MonoBehaviour
+public class MoveHasher
 {
-    public static int ChessMoveToHash(string move)
+    public static int ChessMoveToHash(String move)
     {
         //dictionary for piece file and rank mapping
         var movePatterns = new Dictionary<char, int>
@@ -17,53 +19,30 @@ public class MoveHasher : MonoBehaviour
             { '1', 0 }, { '2', 1 }, { '3', 2 }, { '4', 3 }, { '5', 4 }, { '6', 5 }, { '7', 6 }, { '8', 7 }
         };
 
+        int fileFromHashValue = 0, RankFromHashValue = 0, pieceCode = 0, fileToCode = 0, rankToCode = 0;
+
         //castling
         if (move == "O-O")
         {
-            return 208;
+            return 218;
         }
         else if (move == "O-O-O")
         {
-            return 209;
+            return 219;
         }
 
-        //remove x if move is a capture
-        if (move.Contains('x'))
-        {
-            move = move.Replace("x", "");
+        if (move.Contains('x')) move.Remove('x');
 
-        }
-
-        
-
-        string piece = Char.IsUpper(move[0]) ? move[0].ToString() : "";
-
-        int fileFromHashValue = 0, RankFromHashValue = 0;
-
-        if (move.Length >= 4)
-        {
-            string fileFrom = Char.IsUpper(move[0]) ? move[1].ToString() : move[0].ToString();
-            int fileFromCode = fileFrom.Length > 0 ? movePatterns[fileFrom[0]] : 0;
-            fileFromHashValue = fileFromCode;
-            move = move.Remove(1);
-        }
-        if (move.Length == 4)
-        {
-            string rankFrom = Char.IsUpper(move[0]) ? move[2].ToString() : move[1].ToString();
-            int rankFromCode = rankFrom.Length > 0 ? int.Parse(rankFrom) - 1 : 0;
-            RankFromHashValue = rankFromCode;
-            move.Remove(1);
-        }
-        string to = Char.IsUpper(move[0]) ? move.Substring(1) : move.Substring(0);
-
-        int pieceCode = piece.Length > 0 ? movePatterns[piece[0]] : 0;
-        int rankToCode = movePatterns[to[0]];
-        int fileToCode = int.Parse(to[1].ToString()) - 1;
+        pieceCode = movePatterns[move[0]];
+        fileFromHashValue = movePatterns[move[1]];
+        RankFromHashValue = movePatterns[move[2]];
+        fileToCode = movePatterns[move[2]];
+        rankToCode = movePatterns[move[4]];
 
         int hashCode = (pieceCode * 4096) + (fileToCode * 512) + (rankToCode * 64) + (fileFromHashValue * 8) + (RankFromHashValue);
 
         //maximum number of legal moves in a given chess position is cited as 218
-        //while this is not exact, and highly unlikely, it is a good upper bound
+        //while this is not exact, it is highly unlikely to occur and not an exact limit, therefore a good upper bound
         hashCode %= 218;
 
         return hashCode;

@@ -9,6 +9,8 @@ public class Testing : MonoBehaviour
 {
     void Start()
     {
+        Debug.Log(MoveHasher.ChessMoveToHash("exd4"));
+        Debug.Log(MoveHasher.ChessMoveToHash("Nexf4"));
         Debug.Log(MoveHasher.ChessMoveToHash("e4"));
         Debug.Log(MoveHasher.ChessMoveToHash("e5"));
         Debug.Log(MoveHasher.ChessMoveToHash("Nf3"));
@@ -20,5 +22,10 @@ public class Testing : MonoBehaviour
         Debug.Log(MoveHasher.ChessMoveToHash("O-O"));
         Debug.Log(MoveHasher.ChessMoveToHash("O-O-O"));
         Debug.Log(MoveHasher.ChessMoveToHash("Qb7"));
+    }
+
+    void update()
+    {
+
     }
 }

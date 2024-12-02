@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class Tile
 {
+
+    public readonly int index;
+
     private int num;
     private string name;
     private char curPiece;
@@ -14,8 +17,10 @@ public class Tile
 
     private bool isLegalMove;
 
-    public Tile(int num, string name)
+    public Tile(int num, string name, int index)
     {
+
+        this.index = index;
         this.num = num;
         this.name = name;
         curPiece = '0';
@@ -34,6 +39,11 @@ public class Tile
         curPiece = newPiece;
         pieceType = Char.ToLower(curPiece);
         pieceColor = Char.IsUpper(curPiece) ? 'w' : 'b';
+    }
+
+    public int getIndex()
+    {
+        return index;
     }
 
     public char getCurPiece()
