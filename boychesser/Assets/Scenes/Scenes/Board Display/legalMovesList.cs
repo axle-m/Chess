@@ -3,97 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
+using static PrecomputeMoveData;
 
 public class LegalMovesList
 {
 
     static readonly int[] knight_moves = { 15, 17, 10, 6, -15, -17, -10, -6 };
     static readonly int[] king_moves = { 1, -1, 8, -8, 9, 7, -9, -7 };
-    static readonly int[] cardinal_moves = { 1, -1, 8, -8 };
-    static readonly int[] diagonal_moves = { 9, 7, -9, -7 };
-
-    static readonly int[][] numSquaresToEdge;
+    static readonly int[] pawn_captures = { 7, 9 };
 
     String[] moves = new String[220];
-
-    Tile[] tiles;
-    
-
-    void getCardinalMoves(Tile tile)
-    {
-        char type = tile.getPieceType();
-        int index = tile.getIndex();
-
-        foreach(int step in cardinal_moves)
-        {
-
-            char moveAxis = step == 8 ? 'v' : 'h';
-
-           
-            while (!(isLeftEdge(index, step)) ||  || !(isVertEdge(index, step) && moveAxis == 'v'))
-            {
-                int destinationIndex = index + step;
-
-                if (tiles[destinationIndex].getPieceColor() != tiles[index].getPieceColor())
-                {
-                    string s = tiles[destinationIndex].getPieceType() == '0'
-                        ? type + tiles[index].getName() + tiles[destinationIndex].getName()
-                        : type + tiles[index].getName() + 'x' + tiles[destinationIndex].getName();
-
-                    moves[MoveHasher.ChessMoveToHash(s)] = s;
-                }
-                else if (tiles[destinationIndex].getPieceType() != '0') break;
-            }
-        }
-    }
-
-    void getDiagonalMoves(Tile tile)
-    {
-        char type = tile.getPieceType();
-        int index = tile.getIndex();
-
-        foreach (int step in diagonal_moves)
-        {
-            int moveAxis = step == 7 ? 'l' : 'r';
-
-            while (!(isRightEdge(index, step) && moveAxis == 'r') || !(isLeftEdge(index, step) && moveAxis == 'l'))
-            {
-                int destinationIndex = index + step;
-
-                if (tiles[destinationIndex].getPieceColor() != tiles[index].getPieceColor())
-                {
-                    string s = tiles[destinationIndex].getPieceType() == '0'
-                        ? type + tiles[index].getName() + tiles[destinationIndex].getName()
-                        : type + tiles[index].getName() + 'x' + tiles[destinationIndex].getName();
-
-                    moves[MoveHasher.ChessMoveToHash(s)] = s;
-                }
-                else if (tiles[destinationIndex].getPieceType() != '0') break;
-            }
-        }
-    }
-
-    bool isLeftEdge(int index, int step)
-    {
-        return index + step % 8 == 0;
-    }
-
-    bool isRightEdge(int index, int step)
-    {
-        return index + step % 8 == 7;
-    }
-
-    bool isVertEdge(int index, int step)
-    {
-        return (index + step < 0 || index + step > 63);
-    }
-
-    bool isHorizEdge(int index, int step)
-    {
-        return isRightEdge(index, step) || isLeftEdge(index, step);
-    }
-
-
 
     //TODO
     bool putsInCheck(int destinationIndex, Tile[] tiles)
@@ -103,25 +22,168 @@ public class LegalMovesList
 
     public String[] getLegalMoves(Tile[] tiles, Fen fen)
     {
-        this.tiles = tiles;
-
         for (int start = 0; start < 64; start++)
         {
             char piece = tiles[start].getPieceType();
 
-            if (piece == '0') continue;
             if (tiles[start].getPieceColor() != char.Parse(fen.getActiveColor())) continue;
-            if (piece == 'q' || piece == 'r') generateSlidingMoves(tiles[start], piece);
+            switch (piece)
+            {
+                case 'q': case 'b': case 'r':
+                    generateSlidingMoves(tiles[start], tiles, piece);
+                    break;
+                case 'n':
 
+                    foreach (int move in knight_moves)
+                    {
+                        int destinationIndex = start + move;
+
+                        //bounds check
+                        if (destinationIndex >= 0 && destinationIndex < 64)
+                        {
+                            //wraparound check
+                            int targetFile = destinationIndex % 8;
+                            int curFile = start % 8;
+
+                            if (Math.Abs(targetFile - curFile) == 2 || Math.Abs(targetFile - curFile) == 1)
+                            {
+                                if (tiles[destinationIndex].getPieceType() == '0' || (tiles[destinationIndex].getPieceColor() != tiles[start].getPieceColor()))
+                                {
+                                    string s = "N" + tiles[start].getName() + tiles[destinationIndex].getName();
+                                    moves[MoveHasher.ChessMoveToHash(s)] = s;
+
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case 'k':
+                    foreach (int move in king_moves)
+                    {
+                        int destinationIndex = start + move;
+
+                        //bounds check
+                        if (destinationIndex >= 0 && destinationIndex < 64)
+                        {
+                            //wraparound check
+                            int targetFile = destinationIndex % 8;
+                            int curFile = start % 8;
+
+                            if (Math.Abs(curFile - targetFile) <= 1)
+                            {
+                                if ((tiles[destinationIndex].getPieceType() == '0' || tiles[destinationIndex].getPieceColor() != tiles[start].getPieceColor()) && !putsInCheck(destinationIndex, tiles))
+                                {
+                                    string s = "K" + tiles[start].getName() + tiles[destinationIndex].getName();
+                                    moves[MoveHasher.ChessMoveToHash(s)] = s;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case 'p':
+
+                    int direction = tiles[start].getPieceColor() == 'w' ? 1 : -1;
+                    int forward = start + 8 * direction;
+
+                    // Single forward move
+                    if (IsWithinBounds(forward) && tiles[forward].getPieceType() == '0') 
+                    {
+
+                        string s = "P" + tiles[start].getName() + tiles[forward].getName();
+                        moves[MoveHasher.ChessMoveToHash(s)] = s;
+
+                        // Double forward move (only from starting position)
+                        if (direction == 1 && start / 8 == 1 && tiles[forward + 8].getPieceType() == '0')
+                        {
+                            s = "P" + tiles[start].getName() + tiles[forward + 8].getName();
+                            moves[MoveHasher.ChessMoveToHash(s)] = s;
+                        }
+                        else if (direction == -1 && start / 8 == 6 && tiles[forward - 8].getPieceType() == '0')
+                        {
+                            s = "P" + tiles[start].getName() + tiles[forward - 8].getName();
+                            moves[MoveHasher.ChessMoveToHash(s)] = s;
+                        }
+                    }
+
+                    // Diagonal captures
+
+                    foreach(int n in pawn_captures)
+                    {
+                        int destinationIndex = start + n * direction;
+
+                        if (!IsWithinBounds(destinationIndex) || Math.Abs(destinationIndex % 8 - start % 8) != 1) continue;
+                        
+                        if (tiles[destinationIndex].getPieceColor() != tiles[start].getPieceColor() && tiles[destinationIndex].getPieceType() != '0')
+                        {
+                            string s = "P" + tiles[start].getName() + tiles[destinationIndex].getName();
+                            moves[MoveHasher.ChessMoveToHash(s)] = s;
+                        }
+
+                        if (destinationIndex.Equals(fen.getEnPassant()))
+                        {
+                            string s = "P" + tiles[start].getName() + tiles[destinationIndex].getName();
+                            moves[MoveHasher.ChessMoveToHash(s)] = s;
+                        }
+                    }
+
+                    //TODO
+                    break;
+                default:
+                    continue;
+            }
+
+            //TODO
+            foreach (string s in moves)
+            {
+                /*if (s != null && s.StartsWith("Q"))
+                {
+                    Debug.Log(s);
+                } */  
+            }
         }
+
+        string[] toReturn = new string[moves.Length];
         
-
-        //TODO
-        foreach(string s in moves)
+        for (int i = 0; i < moves.Length; i++)
         {
-            if(s != null) Debug.Log(s);
+            if (moves[i] != null)
+            {
+                toReturn[i] = moves[i];
+            }
         }
 
-        return moves;
+        for(int i = 0; i < moves.Length; i++)
+        {
+            moves[i] = null;
+        }
+
+        return toReturn;
+    }
+
+    private bool IsWithinBounds(int tileIndex)
+    {
+        return tileIndex >= 0 && tileIndex < 64;
+    }
+
+    void generateSlidingMoves(Tile tile, Tile[] tiles, char piece)
+    {
+
+        int startDirIndex = piece == 'b' ? 4 : 0;
+        int endDirIndex = piece == 'r' ? 4 : 8;
+
+        for(int dirIndex = startDirIndex; dirIndex < endDirIndex; dirIndex++)
+        {
+            for(int n = 0; n < PrecomputeMoveData.numSquaresToEdge[tile.index][dirIndex]; n++)
+            {
+                int destinationIndex = tile.index + PrecomputeMoveData.cardinal_moves[dirIndex] * (n +1);
+
+                if (tiles[destinationIndex].getPieceColor() == tile.getPieceColor()) break;
+
+                string s = char.ToUpper(piece) + tile.getName() + tiles[destinationIndex].getName();
+                moves[MoveHasher.ChessMoveToHash(s)] = s;
+
+                if (tiles[destinationIndex].getPieceType() != '0') break;
+            }
+        }
     }
 }

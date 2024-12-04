@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-public class DisplayBoard : MonoBehaviour
+public class Board : MonoBehaviour
 {
 
     public GameObject lightCol;
@@ -31,23 +31,28 @@ public class DisplayBoard : MonoBehaviour
     //fen
     //"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-    public const string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    public const string START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+
     Fen curFen;
 
     //tiles
     public const float tileSize = 1.0f;
-    public Tile[] tiles = new Tile[64];
-    readonly  string[] ranks = new string[] { "a", "b", "c", "d", "e", "f", "g", "h" };
+    public static Tile[] tiles = new Tile[64];
+
+    readonly string[] ranks = new string[] { "a", "b", "c", "d", "e", "f", "g", "h" };
     readonly string[] files = new string[] { "1", "2", "3", "4", "5", "6", "7", "8" };
+
     Tile selectedTile = null;
     Tile targetTile = null;
 
     void Start()
     {
-        curFen = new Fen(startFen);
+        curFen = new Fen(START_FEN);
 
         CreateGraphicalBoard();
         placePieces();
+        PrecomputeMoveData.precomputedMoveData();
     }
 
     private void Update()
@@ -96,17 +101,15 @@ public class DisplayBoard : MonoBehaviour
                         //if a tile is selected, move the piece from the selected tile to the target tile
                         else if (selectedTile != null)
                         {
+                            Debug.Log(curFen.ToString());
+
                             targetTile = tiles[file + rank * 8];
 
-                            string attemptedMove = Char.ToUpper(selectedTile.getPieceType()) + targetTile.getName();
-                            if (targetTile.getCurPiece() != '0')
-                            {
-                                attemptedMove = Char.ToUpper(selectedTile.getPieceType()) + "x" + targetTile.getName();
-                            }
-
+                            string attemptedMove = Char.ToUpper(selectedTile.getPieceType()) + selectedTile.getName() + targetTile.getName();
+                            
                             Debug.Log("Attempted move: " + attemptedMove);
 
-                            if (isLegalMove(attemptedMove, moves))
+                            if (moves[MoveHasher.ChessMoveToHash(attemptedMove)] != null)
                             {
 
                                 targetTile.changeCurPiece(selectedTile.getCurPiece());
@@ -118,7 +121,7 @@ public class DisplayBoard : MonoBehaviour
 
                                 //update fen
 
-                                curFen = new Fen(createNewFen(attemptedMove));
+                                curFen = new Fen(Fen.UpdateFEN(curFen.ToString(), attemptedMove));
 
                                 //replace pieces
 
@@ -146,71 +149,7 @@ public class DisplayBoard : MonoBehaviour
         }
     }
 
-    bool isLegalMove(string attemptedMove, string[] moves)
-    {
-        if (Char.ToLower(attemptedMove[0]) == 'p') attemptedMove = attemptedMove.Substring(1);
-        return moves[MoveHasher.ChessMoveToHash(attemptedMove)] == attemptedMove;
-    }
-
-    string getNewBoardstate()
-    {
-        string boardFen = "";
-        int emptyCount = 0;
-
-        for (int rank = 7; rank >= 0; rank--)
-        {
-            for (int file = 0; file < 8; file++)
-            {
-                Tile currentTile = tiles[file + rank * 8];
-                char piece = currentTile.getCurPiece();
-
-                if (piece == '0')
-                {
-                    emptyCount++;
-                }
-                else
-                {
-                    if (emptyCount > 0)
-                    {
-                        boardFen += emptyCount.ToString();
-                        emptyCount = 0;
-                    }
-                    boardFen += piece;
-                }
-            }
-
-            if (emptyCount > 0)
-            {
-                boardFen += emptyCount.ToString();
-                emptyCount = 0;
-            }
-
-            if (rank > 0)
-            {
-                boardFen += "/";
-            }
-        }
-
-        return boardFen;
-    }
-
-    string createNewFen(string moveType)
-    {
-
-        // Extract the other parts of the previous FEN
-        string curFenString = curFen.ToString();
-        string[] fenParts = curFenString.Split(' ');
-        string activeColor = fenParts[1] == "w" ? "b" : "w";
-        string castlingAvailability = fenParts.Length > 2 ? fenParts[2] : "-";
-        string enPassantTarget = fenParts.Length > 3 ? fenParts[3] : "-";
-        string halfmoveClock = fenParts.Length > 4 ? fenParts[4] : "0";
-        string fullmoveNumber = fenParts.Length > 5 ? fenParts[5] : "1";
-
-        // Construct the full FEN string
-        string newFenString = getNewBoardstate() + " " + activeColor + " " + castlingAvailability + " " + enPassantTarget + " " + halfmoveClock + " " + fullmoveNumber;
-        return newFenString;
-    }
-
+    
     void placePieces()
     {
         string[] rows = curFen.getBoard().Split('/');

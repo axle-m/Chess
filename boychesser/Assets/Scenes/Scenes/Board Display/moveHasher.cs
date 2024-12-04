@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 
 public class MoveHasher
 {
-    public static int ChessMoveToHash(String move)
+    public static int ChessMoveToHash(String attMove)
     {
         //dictionary for piece file and rank mapping
         var movePatterns = new Dictionary<char, int>
@@ -22,26 +22,35 @@ public class MoveHasher
         int fileFromHashValue = 0, RankFromHashValue = 0, pieceCode = 0, fileToCode = 0, rankToCode = 0;
 
         //castling
-        if (move == "O-O")
+        if (attMove == "O-O")
         {
             return 218;
         }
-        else if (move == "O-O-O")
+        else if (attMove == "O-O-O")
         {
             return 219;
         }
 
-        if (move.Contains('x')) move.Remove('x');
+        char[] move = attMove.ToCharArray();
 
-        pieceCode = movePatterns[move[0]];
-        fileFromHashValue = movePatterns[move[1]];
-        RankFromHashValue = movePatterns[move[2]];
-        fileToCode = movePatterns[move[2]];
-        rankToCode = movePatterns[move[4]];
+        try
+        {
+            pieceCode = movePatterns[move[0]];
+            fileFromHashValue = movePatterns[move[1]];
+            RankFromHashValue = movePatterns[move[2]];
+            fileToCode = movePatterns[move[3]];
+            rankToCode = movePatterns[move[4]];
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+            Debug.Log(move.ToString());
+        }
 
         int hashCode = (pieceCode * 4096) + (fileToCode * 512) + (rankToCode * 64) + (fileFromHashValue * 8) + (RankFromHashValue);
 
         //maximum number of legal moves in a given chess position is cited as 218
+        //add 2 for castling moves
         //while this is not exact, it is highly unlikely to occur and not an exact limit, therefore a good upper bound
         hashCode %= 218;
 
