@@ -34,7 +34,7 @@ public class Board : MonoBehaviour
     //fen
     //"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-    public const string START_FEN = "8/8/8/4b3/8/8/8/8 w KQkq - 0 1";
+    public const string START_FEIN = "8/8/8/4b3/8/8/8/8 w KQkq - 0 1";
 
     Fen curFen;
 
@@ -49,7 +49,7 @@ public class Board : MonoBehaviour
 
     void Start()
     {
-        curFen = new Fen(START_FEN);
+        curFen = new Fen(START_FEIN);
 
         CreateGraphicalBoard();
         placePieces();

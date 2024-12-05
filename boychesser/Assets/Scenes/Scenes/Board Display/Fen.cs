@@ -73,9 +73,9 @@ public class Fen
         int fullmoveNumber = int.Parse(parts[5]);
 
         // Parse the move
-        string piece = move.Substring(0, 1);
+        char piece = move[0];
 
-        piece = activeColor == "w" ? piece.ToUpper() : piece.ToLower();
+        piece = activeColor.Equals("w") ? Char.ToUpper(piece) : Char.ToLower(piece);
 
         string from = move.Substring(1, 2);
         string to = move.Substring(3, 2);
@@ -109,9 +109,9 @@ public class Fen
 
         // Update board for the move
         boardArray[fromRow, fromCol] = '1'; // Empty the source square
-        boardArray[toRow, toCol] = piece[0]; // Place the piece on the destination square
+        boardArray[toRow, toCol] = piece; // Place the piece on the destination square
 
-        if (piece.ToLower() == "p" && to == enPassant)
+        if (Char.ToLower(piece) == 'p' && to == enPassant)
         {
             int captureRow = activeColor == "w" ? toRow + 1 : toRow - 1;
             boardArray[captureRow, toCol] = '1'; // Remove captured pawn
@@ -143,17 +143,17 @@ public class Fen
         }));
 
         // Update active color
-        activeColor = activeColor == "w" ? "b" : "w";
+        activeColor = activeColor.Equals("w") ? "b" : "w";
 
         enPassant = "-";
-        if (piece.ToLower() == "p" && Math.Abs(fromRow - toRow) == 2)
+        if (Char.ToLower(piece) == 'p' && Math.Abs(fromRow - toRow) == 2)
         {
             int enPassantRow = activeColor == "b" ? fromRow - 1 : fromRow + 1;
             enPassant = $"{(char)('a' + fromCol)}{8 - enPassantRow}";
         }
 
         // Update halfmove clock
-        if (piece.ToLower() == "p" || boardArray[toRow, toCol] != '1')
+        if (Char.ToLower(piece) == 'p' || boardArray[toRow, toCol] != '1')
         {
             halfmoveClock = 0; // Reset halfmove clock on pawn move or capture
         }
@@ -163,7 +163,7 @@ public class Fen
         }
 
         // Update fullmove number
-        if (activeColor == "w")
+        if (activeColor.Equals("w"))
         {
             fullmoveNumber++;
         }

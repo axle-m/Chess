@@ -33,6 +33,8 @@ public class LegalMovesList
 
             char piece = tiles[start].getPieceType();
 
+            if (tiles[start].getPieceColor() != fen.getActiveColor()[0]) continue;
+
 
             switch (piece)
             {
