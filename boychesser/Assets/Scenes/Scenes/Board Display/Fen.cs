@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Unity.VisualScripting;
 using UnityEngine;
 using static PrecomputeMoveData;
 
@@ -57,7 +58,7 @@ public class Fen
         return $"{Board} {ActiveColor} {CastlingAvailability} {EnPassantTarget} {HalfmoveClock} {FullmoveNumber}";
     }
 
-    public static string UpdateFEN(string fen, string move)
+    public static string move(string fen, string move)
     {
         // Parse the FEN string
         var parts = fen.Split(' ');
@@ -169,5 +170,43 @@ public class Fen
 
         // Assemble the new FEN
         return $"{newBoard} {activeColor} {castlingRights} {enPassant} {halfmoveClock} {fullmoveNumber}";
+    }
+
+    public Tile[] fenToTiles()
+    {
+        Tile[] tiles = new Tile[64];
+
+        string[] rows = Board.Split('/');
+
+        int index = 0;
+
+        for (int i = rows.Length - 1; i >= 0; i--)
+        {
+            string row = rows[i];
+
+            for (int j = 0; j < row.Length; j++)
+            {
+                if (Char.IsDigit(rows[i][j]))
+                {
+                    index += int.Parse(rows[i][j].ToString());
+                    continue;
+                }
+
+                Tile tile = new Tile(index, rows[i][j].ToString(), index);
+                tiles[index] = tile;
+
+                index++;
+            }
+        }
+
+        for (int i = 0; i < 64; i++)
+        {
+            if (tiles[i] == null)
+            {
+                tiles[i] = new Tile(i, "0", i);
+            }
+        }
+
+        return tiles;
     }
 }

@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class MoveHasher
 {
-    public static int ChessMoveToHash(String attMove)
+    private static int ChessMoveToHash(String attMove)
     {
         //dictionary for piece file and rank mapping
         var movePatterns = new Dictionary<char, int>
@@ -55,5 +56,19 @@ public class MoveHasher
         hashCode %= 218;
 
         return hashCode;
+    }
+
+    public static int hash(string move, String[] moves)
+    {
+        int code = ChessMoveToHash(move);
+
+        while (moves[code] != null && !moves[code].Equals(move))
+        {
+            code++;
+            code %= 218;
+        }
+
+
+        return code;
     }
 }

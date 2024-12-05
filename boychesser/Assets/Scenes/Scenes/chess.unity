@@ -236,6 +236,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lightCol: {fileID: 7410974056255760042, guid: 5e1ce673a44d06844a075137b38ca5cf, type: 3}
   darkCol: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
+  legalCol: {fileID: 7410974056255760042, guid: 7eaa9500bc97a494f9f485ef14bd7a6e, type: 3}
   w_k: {fileID: 2055799978320434842, guid: c467369d151ea4845b8cb92f5e1ba5cf, type: 3}
   w_q: {fileID: 2055799978320434842, guid: e85bd7f43d08e80429eeb1c95e5f3365, type: 3}
   w_r: {fileID: 2055799978320434842, guid: f936f95419fd5c74dbfbbb784d0658c4, type: 3}

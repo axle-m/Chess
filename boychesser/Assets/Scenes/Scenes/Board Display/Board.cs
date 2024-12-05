@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -10,6 +12,7 @@ public class Board : MonoBehaviour
 
     public GameObject lightCol;
     public GameObject darkCol;
+    public GameObject legalCol;
 
 
     //pieces
@@ -31,8 +34,7 @@ public class Board : MonoBehaviour
     //fen
     //"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-    public const string START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-
+    public const string START_FEN = "8/8/8/4b3/8/8/8/8 w KQkq - 0 1";
 
     Fen curFen;
 
@@ -44,7 +46,6 @@ public class Board : MonoBehaviour
     readonly string[] files = new string[] { "1", "2", "3", "4", "5", "6", "7", "8" };
 
     Tile selectedTile = null;
-    Tile targetTile = null;
 
     void Start()
     {
@@ -57,14 +58,37 @@ public class Board : MonoBehaviour
 
     private void Update()
     {
-        move();
+        tryMove();
     }
 
-    void move()
+    void tryMove()
     {
+        string move = getAttemptedMove();
+        if(move != null)
+        {
+            String[] moves = LegalMovesList.getLegalMoves(curFen);
+            if(search(move, moves))
+            {
 
-        LegalMovesList legalMovesList = new LegalMovesList();
-        string[] moves = legalMovesList.getLegalMoves(tiles, curFen);
+                curFen = new Fen(Fen.move(curFen.ToString(), move));
+
+                GameObject[] pieces = GameObject.FindGameObjectsWithTag("piece");
+                foreach (GameObject obj in pieces)
+                {
+                    Destroy(obj);
+                }
+                
+                placePieces();
+            }
+            else
+            {
+                Debug.Log(move + " Illegal move");
+            }
+        }
+    }
+
+    string getAttemptedMove()
+    {
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -98,58 +122,32 @@ public class Board : MonoBehaviour
                             }
                         }
 
-                        //if a tile is selected, move the piece from the selected tile to the target tile
+                        //if a tile is selected, return the attempted move
                         else if (selectedTile != null)
                         {
-                            Debug.Log(curFen.ToString());
+                        
+                            string toReturn = Char.ToUpper(selectedTile.getPieceType()) + selectedTile.getName() + tiles[file + rank * 8].getName();
+                            selectedTile = null;
+                            return toReturn;
 
-                            targetTile = tiles[file + rank * 8];
-
-                            string attemptedMove = Char.ToUpper(selectedTile.getPieceType()) + selectedTile.getName() + targetTile.getName();
-                            
-                            Debug.Log("Attempted move: " + attemptedMove);
-
-                            if (moves[MoveHasher.ChessMoveToHash(attemptedMove)] != null)
-                            {
-
-                                targetTile.changeCurPiece(selectedTile.getCurPiece());
-                                selectedTile.changeCurPiece('0');
-
-                                //reset selected and target tiles
-                                selectedTile = null;
-                                targetTile = null;
-
-                                //update fen
-
-                                curFen = new Fen(Fen.UpdateFEN(curFen.ToString(), attemptedMove));
-
-                                //replace pieces
-
-                                GameObject[] pieces = GameObject.FindGameObjectsWithTag("piece");
-                                foreach (GameObject obj in pieces)
-                                {
-                                    Destroy(obj);
-                                }
-
-                                placePieces();
-                                Debug.Log(curFen.ToString());
-                            } 
-                            
-                            else
-                            {
-                                selectedTile = null;
-                                targetTile = null;
-
-                                Debug.Log(attemptedMove + " is not a legal move");
-                            }
                         }
                     }
                 }
             }
         }
+
+        return null;
+    } //getAttemptedMove)(;
+
+    public bool search(string move, string[] moves)
+    {
+        foreach(string s in moves)
+        {
+            if (s == move) return true;
+        }
+        return false;
     }
 
-    
     void placePieces()
     {
         string[] rows = curFen.getBoard().Split('/');
@@ -258,6 +256,7 @@ public class Board : MonoBehaviour
                 GameObject squareColor = (isLightSquare) ? lightCol : darkCol;
 
                 GameObject tile = Instantiate(squareColor, new Vector3(file * tileSize - 4.0f, rank * tileSize - 4.0f), Quaternion.identity);
+                tile.tag = "tile";
 
 
                 string tileName = ranks[rank] + files[file];

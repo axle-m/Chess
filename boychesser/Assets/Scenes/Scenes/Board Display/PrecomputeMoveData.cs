@@ -27,6 +27,8 @@ public class PrecomputeMoveData
                 int southWest = Mathf.Min(south, west);
 
                 numSquaresToEdge[squareIndex] = new int[] { north, south, east, west, northEast, northWest, southEast, southWest };
+
+                //Debug.Log("Square: " + squareIndex + " N: " + north + " S: " + south + " E: " + east + " W: " + west + " NE: " + northEast + " NW: " + northWest + " SE: " + southEast + " SW: " + southWest);
             }
         }
     }
