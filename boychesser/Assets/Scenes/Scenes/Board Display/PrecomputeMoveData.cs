@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PrecomputeMoveData
 {
-    public static readonly int[] cardinal_moves = { 8, -8, 1, -1, 9, 7, -9, -7 };
+    public static readonly int[] cardinal_moves = { 8, -8, 1, -1, 9, 7, -7, -9 };
 
     public static readonly int[][] numSquaresToEdge = new int[64][];
 
