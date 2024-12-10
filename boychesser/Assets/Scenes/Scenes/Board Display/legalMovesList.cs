@@ -24,7 +24,7 @@ public class LegalMovesList
     public static String[] getLegalMoves(Fen fen)
     {
 
-        Tile[] tiles = fen.fenToTiles();
+        Tile[] tiles = fen.fenToTiles();    
 
         List<string> moves = new List<string>();
 
@@ -197,5 +197,15 @@ public class LegalMovesList
                 if (tiles[destinationIndex].getPieceType() != '0') break;
            }
         }
+    }
+
+    internal object getLegalMove()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal object getLegalMoves(object fen)
+    {
+        throw new NotImplementedException();
     }
 }

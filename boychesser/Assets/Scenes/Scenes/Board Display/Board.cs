@@ -34,9 +34,9 @@ public class Board : MonoBehaviour
     //fen
     //"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-    public const string START_FEIN = "8/8/8/3Bb3/8/8/8/8 w KQkq - 0 1";
+    public const string START_FEIN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-    Fen curFen;
+    public Fen curFen;
 
     //tiles
     public const float tileSize = 1.0f;
@@ -54,6 +54,7 @@ public class Board : MonoBehaviour
         CreateGraphicalBoard();
         placePieces();
         PrecomputeMoveData.precomputedMoveData();
+        Debug.Log("Testing");
     }
 
     private void Update()

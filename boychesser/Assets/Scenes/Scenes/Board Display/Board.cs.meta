@@ -3,7 +3,22 @@ guid: 46d641b16d1606647b10b6641c31f98f
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - lightCol: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
+  - darkCol: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
+  - legalCol: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
+  - w_k: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
+  - w_q: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
+  - w_r: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
+  - w_b: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
+  - w_n: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
+  - w_p: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
+  - b_k: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
+  - b_q: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
+  - b_r: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
+  - b_b: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
+  - b_n: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
+  - b_p: {fileID: 7410974056255760042, guid: afabd4411595a84469a4ad018d1f2e16, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
