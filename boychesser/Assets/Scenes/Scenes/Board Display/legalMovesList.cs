@@ -20,19 +20,20 @@ public class LegalMovesList
     {
         return false;
     }
-
+    //generate a list of legal moves in a fen string array
     public static String[] getLegalMoves(Fen fen)
     {
 
         Tile[] tiles = fen.fenToTiles();    
 
         List<string> moves = new List<string>();
-
+        //iterate over all 64 tiles of chess board
         for (int start = 0; start < 64; start++)
         {
-
+            //get the piece on current tile
             char piece = tiles[start].getPieceType();
 
+            //
             if (tiles[start].getPieceColor() != fen.getActiveColor()[0]) continue;
 
 
