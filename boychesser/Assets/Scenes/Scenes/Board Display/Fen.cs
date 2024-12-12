@@ -24,12 +24,23 @@ public class Fen
 
     private void ParseFen(string fen)
     {
+        //split fen string into 6 parts with delimiter of a space char
+        //ai did this and idk anything about fen strings so not sure if this is accurate
+        //first part is the board
+        //second part is the active color (w or b)
+        //third part is the castling availability (e.g. KQkq)
+        //fourth part is the en passant target square (e.g. e6)
+        //fifth part is the halfmove clock (number of halfmoves since the last pawn move)
+        //sixth part is the fullmove number (number of moves since the start of the game)
+
+        // throw an exception if the number of parts is not 6, which means the FEN string is invalid.
         string[] parts = fen.Split(' ');
         if (parts.Length != 6)
         {
             throw new ArgumentException("Invalid FEN string");
         }
-
+        //assigns each piece of the fen string to a variable
+        //active color is who's turn it is I think
         Board = parts[0];
         ActiveColor = parts[1];
         CastlingAvailability = parts[2];
