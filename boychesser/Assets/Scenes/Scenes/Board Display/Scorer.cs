@@ -3,7 +3,9 @@ public class Scorer : Board{
     // readonly int qScore = 9, rScore = 5, nScore = 3, bScore = 3, pScore = 1;
     // char[] wPieces = new char[] { 'Q', 'R', 'R', 'B', 'B', 'N', 'N', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P' };
     // char[] bPieces = new char[] { 'q', 'r', 'r', 'b', 'b', 'n', 'n', 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' };
-    public int getBasicScore(string curFen){  //yalls methods are dogshit, this is good
+    public int getPieceScore(string curFen){  
+    //yalls methods are dogshit, this is good - Max
+    //This only takes account the amount of pieces each player has
         int whiteScore = 0;
         int blackScore = 0;
         int i = 0;
@@ -64,7 +66,17 @@ public class Scorer : Board{
         return whiteScore - blackScore;
     }
 
-    
+    public int getPositionScore(string curFen){
+        //Not Completed, This code will take into account the placement of the piece
+        //This website has the points for each position: https://www.freecodecamp.org/news/simple-chess-ai-step-by-step-1d55a9266977/
+        int whiteScore = 0;
+        int blackScore = 0;
+        int i = 0;
+        while(curFen[i] != ' '){
+
+        }
+        return 0;
+    }
         
         //var fenList = new ArrayList();
         
