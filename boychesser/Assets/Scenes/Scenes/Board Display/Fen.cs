@@ -83,40 +83,51 @@ public class Fen
         int halfmoveClock = int.Parse(parts[4]);
         int fullmoveNumber = int.Parse(parts[5]);
 
-        // Parse the move
+        // Parse the move -- Save the pieces type to piece var
         char piece = move[0];
 
+        //check what active color is, set char to uppercase if it's white and lowercase if it's down
         piece = activeColor.Equals("w") ? Char.ToUpper(piece) : Char.ToLower(piece);
 
+        //save the square the piece is currently on to from variable
         string from = move.Substring(1, 2);
+        //save the squre the piece is trying to move to to the to variable.
         string to = move.Substring(3, 2);
 
         // Convert board to a 2D array for easier manipulation
         var rows = board.Split('/');
         char[,] boardArray = new char[8, 8];
+        //iterate for column, x of array
         for (int i = 0; i < 8; i++)
         {
             int col = 0;
+            //iterate through the rows, y of array
             foreach (var ch in rows[i])
             {
+                //if the character is a digit there are that many empty spaces consecutively in that row.
                 if (char.IsDigit(ch))
                 {
+                    //save the amount of empty squares as an int. basically char has an ascii value so the difference between
+                    //that value and the ascii '0' is the same as int zero and that number
                     int emptySquares = ch - '0';
+                    //iterate through the empty squares
                     for (int j = 0; j < emptySquares; j++)
+                        //add a 1 to each square that is empty
                         boardArray[i, col++] = '1'; // Represent empty squares
                 }
                 else
                 {
+                    //set the board square to the piece on it
                     boardArray[i, col++] = ch;
                 }
             }
         }
 
         // Map positions to 2D indices
-        int fromRow = 8 - int.Parse(from[1].ToString());
-        int fromCol = from[0] - 'a';
-        int toRow = 8 - int.Parse(to[1].ToString());
-        int toCol = to[0] - 'a';
+        int fromRow = 8 - int.Parse(from[1].ToString()); //get row that the piece is from
+        int fromCol = from[0] - 'a'; //get the column the piece is from
+        int toRow = 8 - int.Parse(to[1].ToString()); //get the row the piece is going to
+        int toCol = to[0] - 'a'; //get the column the piece is going to
 
         // Update board for the move
         boardArray[fromRow, fromCol] = '1'; // Empty the source square
