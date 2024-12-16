@@ -1,5 +1,5 @@
 using System.Collections;
-public class Scorer : Board{
+public class Scorer : Board {
     // readonly int qScore = 9, rScore = 5, nScore = 3, bScore = 3, pScore = 1;
     // char[] wPieces = new char[] { 'Q', 'R', 'R', 'B', 'B', 'N', 'N', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P' };
     // char[] bPieces = new char[] { 'q', 'r', 'r', 'b', 'b', 'n', 'n', 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' };
@@ -71,15 +71,19 @@ public class Scorer : Board{
         //This website has the points for each position: https://www.freecodecamp.org/news/simple-chess-ai-step-by-step-1d55a9266977/
         int whiteScore = 0;
         int blackScore = 0;
-        int i = 0;
-        while(curFen[i] != ' '){
-
+        string[] parts = curFen.Split(' ');
+        string[] board = parts[0].Split('/');
+        for(int i = 0; i < board.Length; i++){
+            for(int j = 0; j < board[i].Length; j++){
+                if(char.IsLetter(board[i][j])){
+                    
+                }
+            }
         }
         return 0;
     }
         
         //var fenList = new ArrayList();
-        
         
         /* foreach (char c in fenArr)
         {
@@ -144,4 +148,3 @@ public class Scorer : Board{
         }
         */
 }
-
