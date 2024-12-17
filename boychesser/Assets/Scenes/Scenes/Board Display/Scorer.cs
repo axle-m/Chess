@@ -1,12 +1,46 @@
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.UIElements;
 public class Scorer : Board {
     // readonly int qScore = 9, rScore = 5, nScore = 3, bScore = 3, pScore = 1;
     // char[] wPieces = new char[] { 'Q', 'R', 'R', 'B', 'B', 'N', 'N', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P' };
     // char[] bPieces = new char[] { 'q', 'r', 'r', 'b', 'b', 'n', 'n', 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' };
-    public int getPieceScore(string curFen){  
-    //yalls methods are dogshit, this is good - Max
-    //This only takes account the amount of pieces each player has
-        int whiteScore = 0;
+
+    static readonly Dictionary<char, int> piece_values = new Dictionary<char, int>
+    {
+        { 'k', 256 },   //give king arbitrarily high value to ensure any position in which a side can capture a king is always chosen
+        { 'q', 9 }, 
+        { 'r', 5 }, 
+        { 'b', 3 },     //bishop and knight are both 3, may change bishop to be a little higher later for accuracy
+        { 'n', 3 }, 
+        { 'p', 1 }
+    };
+
+    public int getPieceScore(string curFen){
+        //yalls methods are dogshit, this is good - Max
+        //This only takes account the amount of pieces each player has
+
+        //my man ur code is the ass one u can do this in like 20 total lines - alex
+        //also can we do something about all the extraneous commented code its hurting my eyes
+
+        int score = 0;
+
+        string board = curFen.Split(' ')[0];
+        char[] boardCharArray = board.ToCharArray();
+        foreach(char c in boardCharArray)
+        {
+            if (piece_values.ContainsKey(char.ToLower(c)))
+            {
+                int pieceScore = piece_values[c];
+                if (!char.IsUpper(c)) pieceScore *= -1;
+
+                score += pieceScore;
+            }
+        }
+
+        return score;
+
+        /*int whiteScore = 0;
         int blackScore = 0;
         int i = 0;
         while(curFen[i] != ' '){
@@ -62,8 +96,8 @@ public class Scorer : Board {
                 i++;
             }
             }
-        }
-        return whiteScore - blackScore;
+        
+        return whiteScore - blackScore;*/
     }
 
     public int getPositionScore(string curFen){
