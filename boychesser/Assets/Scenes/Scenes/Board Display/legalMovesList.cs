@@ -140,7 +140,7 @@ public class LegalMovesList
                             tiles[destinationIndex].setLegalMove(true);
                         }
 
-                        if (destinationIndex.Equals(fen.getEnPassant()))
+                        if (tiles[destinationIndex].getName().Equals(fen.getEnPassant()))
                         {
                             string s = "P" + tiles[start].getName() + tiles[destinationIndex].getName();
                             moves.Add(s);

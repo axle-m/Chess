@@ -22,6 +22,7 @@ public class Scorer : Board {
 
         //my man ur code is the ass one u can do this in like 20 total lines - alex
         //also can we do something about all the extraneous commented code its hurting my eyes
+        //i didnt test my code either but it works trust
 
         int score = 0;
 
