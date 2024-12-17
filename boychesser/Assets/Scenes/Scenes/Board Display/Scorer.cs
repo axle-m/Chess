@@ -6,6 +6,12 @@ public class Scorer : Board {
     // char[] wPieces = new char[] { 'Q', 'R', 'R', 'B', 'B', 'N', 'N', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P' };
     // char[] bPieces = new char[] { 'q', 'r', 'r', 'b', 'b', 'n', 'n', 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' };
 
+    int[] whiteKingPos = new int[] {2, 3, 1, 0, 0, 1, 3, 2, 
+                                    2, 2, 0, 0, 0, 0, 2, 2, 
+                                    -1, -2, -2, -2, -2, -2, -2, -1, 
+                                    -2, -3}
+
+
     static readonly Dictionary<char, int> piece_values = new Dictionary<char, int>
     {
         { 'k', 256 },   //give king arbitrarily high value to ensure any position in which a side can capture a king is always chosen
@@ -101,6 +107,8 @@ public class Scorer : Board {
         return whiteScore - blackScore;*/
     }
 
+    
+
     public int getPositionScore(string curFen){
         //Not Completed, This code will take into account the placement of the piece
         //This website has the points for each position: https://www.freecodecamp.org/news/simple-chess-ai-step-by-step-1d55a9266977/
@@ -182,4 +190,13 @@ public class Scorer : Board {
             return ' ';
         }
         */
+
+    public void blackPosition(int[] array){
+        int[] black = new int[array.Length];
+        for(int i = 0; i < array.Length; i++){
+            for(int i = 0; i < array.Length; i++){
+                black[i] = array[i] * -1;
+            }
+        }
+    }
 }
