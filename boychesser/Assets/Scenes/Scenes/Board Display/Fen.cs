@@ -179,6 +179,8 @@ public class Fen
             fullmoveNumber++;
         }
 
+        Debug.Log(enPassant);
+
         // Assemble the new FEN
         return $"{newBoard} {activeColor} {castlingRights} {enPassant} {halfmoveClock} {fullmoveNumber}";
     }
