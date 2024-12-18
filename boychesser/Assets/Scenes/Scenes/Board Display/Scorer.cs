@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine.UIElements;
 public class Scorer : Board {
     // readonly int qScore = 9, rScore = 5, nScore = 3, bScore = 3, pScore = 1;
@@ -26,7 +27,7 @@ public class Scorer : Board {
                                             {2, 3, 1, 0, 0, 1, 3, 2},};
     
     double[,] whiteQueenPos = new double[,] {{-2, -1, -1, -0.5, -0.5, -1, -1, -2},
-                                            {-1, 0, 0.5, 0, 0, 0, 0, -1}}
+                                            {-1, 0, 0.5, 0, 0, 0, 0, -1}};
 
     static readonly Dictionary<char, int> piece_values = new Dictionary<char, int>
     {
@@ -38,26 +39,29 @@ public class Scorer : Board {
         { 'p', 1 }
     };
 
-    public int getPieceScore(string curFen){
+    public int getPieceScore(Fen f){
         //This only takes account the amount of pieces each player has
-
+        Fen curFen = new Fen(f.ToString());
         int whiteScore = 0;
         int blackScore = 0;
 
-        string board = curFen.Split(' ')[0];
+        string board = f.ToString().Split(' ')[0];
         char[] boardCharArray = board.ToCharArray();
         foreach(char c in boardCharArray)
         {
             if (piece_values.ContainsKey(char.ToLower(c)))
             {
                 int pieceScore = piece_values[c];
-                (!char.IsUpper(c)) ? whiteScore += pieceScore : blackScore += pieceScore;
-
-                score += pieceScore;
+                if(!char.IsUpper(c)) {
+                    whiteScore += pieceScore;
+                }
+                else{
+                blackScore += pieceScore;
+                }
             }
         }
-
-        return score;
+        return (curFen.getActiveColor() == "w") ? whiteScore - blackScore : blackScore - whiteScore;
+        
 
         /*int whiteScore = 0;
         int blackScore = 0;
@@ -116,7 +120,7 @@ public class Scorer : Board {
             }
             }
         
-        return whiteScore - blackScore;*/a
+        return whiteScore - blackScore;*/
         
     }
 
