@@ -5,20 +5,28 @@ public class Scorer : Board {
     // readonly int qScore = 9, rScore = 5, nScore = 3, bScore = 3, pScore = 1;
     // char[] wPieces = new char[] { 'Q', 'R', 'R', 'B', 'B', 'N', 'N', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P' };
     // char[] bPieces = new char[] { 'q', 'r', 'r', 'b', 'b', 'n', 'n', 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' };
+    //https://www.freecodecamp.org/news/simple-chess-ai-step-by-step-1d55a9266977/
 
-<<<<<<< Updated upstream
-    int[] whiteKingPos = new int[] {2, 3, 1, 0, 0, 1, 3, 2,
-                                    2, 2, 0, 0, 0, 0, 2, 2,
-                                    -1, -2, -2, -2, -2, -2, -2, -1,
-                                    -2, -3};
-=======
-    int[] whiteKingPos = new int[] {2, 3, 1, 0, 0, 1, 3, 2, 
-                                    2, 2, 0, 0, 0, 0, 2, 2, 
-                                    -1, -2, -2, -2, -2, -2, -2, -1, 
-                                    -2, -3, -3, -4, -4, -3, -3, -2,
-                                    -3, -4, -4, -5, -5, -4, -4, -3,}
->>>>>>> Stashed changes
-
+    double[,] whiteKingPos = new double[,] {{2, 3, 1, 0, 0, 1, 3, 2},
+                                        {2, 2, 0, 0, 0, 0, 2, 2}, 
+                                        {-1, -2, -2, -2, -2, -2, -2, -1}, 
+                                        {-2, -3, -3, -4, -4, -3, -3, -2},
+                                        {-3, -4, -4, -5, -5, -4, -4, -3},
+                                        {-3, -4, -4, -5, -5, -4, -4, -3}, 
+                                        {-3, -4, -4, -5, -5, -4, -4, -3},
+                                        {-3, -4, -4, -5, -5, -4, -4, -3}};
+    
+    double[,] blackKingPos = new double[,] {{-3, -4, -4, -5, -5, -4, -4, -3},
+                                            {-3, -4, -4, -5, -5, -4, -4, -3},
+                                            {-3, -4, -4, -5, -5, -4, -4, -3}, 
+                                            {-3, -4, -4, -5, -5, -4, -4, -3},
+                                            {-2, -3, -3, -4, -4, -3, -3, -2},
+                                            {-1, -2, -2, -2, -2, -2, -2, -1},
+                                            {2, 2, 0, 0, 0, 0, 2, 2},
+                                            {2, 3, 1, 0, 0, 1, 3, 2},};
+    
+    double[,] whiteQueenPos = new double[,] {{-2, -1, -1, -0.5, -0.5, -1, -1, -2},
+                                            {-1, 0, 0.5, 0, 0, 0, 0, -1}}
 
     static readonly Dictionary<char, int> piece_values = new Dictionary<char, int>
     {
@@ -31,14 +39,10 @@ public class Scorer : Board {
     };
 
     public int getPieceScore(string curFen){
-        //yalls methods are dogshit, this is good - Max
         //This only takes account the amount of pieces each player has
 
-        //my man ur code is the ass one u can do this in like 20 total lines - alex
-        //also can we do something about all the extraneous commented code its hurting my eyes
-        //i didnt test my code either but it works trust
-
-        int score = 0;
+        int whiteScore = 0;
+        int blackScore = 0;
 
         string board = curFen.Split(' ')[0];
         char[] boardCharArray = board.ToCharArray();
@@ -47,7 +51,7 @@ public class Scorer : Board {
             if (piece_values.ContainsKey(char.ToLower(c)))
             {
                 int pieceScore = piece_values[c];
-                if (!char.IsUpper(c)) pieceScore *= -1;
+                (!char.IsUpper(c)) ? whiteScore += pieceScore : blackScore += pieceScore;
 
                 score += pieceScore;
             }
@@ -112,7 +116,8 @@ public class Scorer : Board {
             }
             }
         
-        return whiteScore - blackScore;*/
+        return whiteScore - blackScore;*/a
+        
     }
 
     
@@ -202,9 +207,7 @@ public class Scorer : Board {
     public void blackPosition(int[] array){
         int[] black = new int[array.Length];
         for(int i = 0; i < array.Length; i++){
-            for(int i = 0; i < array.Length; i++){
-                black[i] = array[i] * -1;
-            }
+            black[i] = array[i] * -1;
         }
     }
 }
