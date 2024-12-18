@@ -43,6 +43,10 @@ public class ChessBot
                 }
             }
         }
+<<<<<<< Updated upstream
+=======
+        }
+>>>>>>> Stashed changes
         else{ //if bot is black
          for(int i = 1; i < legalMovesList; i++){
             move = legalMovesList[i];  
