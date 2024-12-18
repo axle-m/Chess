@@ -41,7 +41,6 @@ public class Scorer : Board {
 
     public int getPieceScore(Fen f){
         //This only takes account the amount of pieces each player has
-        Fen curFen = new Fen(f.ToString());
         int whiteScore = 0;
         int blackScore = 0;
 
@@ -60,7 +59,7 @@ public class Scorer : Board {
                 }
             }
         }
-        return (curFen.getActiveColor() == "w") ? whiteScore - blackScore : blackScore - whiteScore;
+        return (f.getActiveColor() == "w") ? whiteScore - blackScore : blackScore - whiteScore;
         
 
         /*int whiteScore = 0;
