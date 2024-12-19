@@ -1,10 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine.UIElements;
 public class Scorer : Board {
     // readonly int qScore = 9, rScore = 5, nScore = 3, bScore = 3, pScore = 1;
     // char[] wPieces = new char[] { 'Q', 'R', 'R', 'B', 'B', 'N', 'N', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P' };
     // char[] bPieces = new char[] { 'q', 'r', 'r', 'b', 'b', 'n', 'n', 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' };
+    //https://www.freecodecamp.org/news/simple-chess-ai-step-by-step-1d55a9266977/
+
+    double[,] whiteKingPos = new double[,] {{2, 3, 1, 0, 0, 1, 3, 2},
+                                        {2, 2, 0, 0, 0, 0, 2, 2}, 
+                                        {-1, -2, -2, -2, -2, -2, -2, -1}, 
+                                        {-2, -3, -3, -4, -4, -3, -3, -2},
+                                        {-3, -4, -4, -5, -5, -4, -4, -3},
+                                        {-3, -4, -4, -5, -5, -4, -4, -3}, 
+                                        {-3, -4, -4, -5, -5, -4, -4, -3},
+                                        {-3, -4, -4, -5, -5, -4, -4, -3}};
+    
+    double[,] blackKingPos = new double[,] {{-3, -4, -4, -5, -5, -4, -4, -3},
+                                            {-3, -4, -4, -5, -5, -4, -4, -3},
+                                            {-3, -4, -4, -5, -5, -4, -4, -3}, 
+                                            {-3, -4, -4, -5, -5, -4, -4, -3},
+                                            {-2, -3, -3, -4, -4, -3, -3, -2},
+                                            {-1, -2, -2, -2, -2, -2, -2, -1},
+                                            {2, 2, 0, 0, 0, 0, 2, 2},
+                                            {2, 3, 1, 0, 0, 1, 3, 2},};
+    
+    double[,] whiteQueenPos = new double[,] {{-2, -1, -1, -0.5, -0.5, -1, -1, -2},
+                                            {-1, 0, 0.5, 0, 0, 0, 0, -1}};
 
     static readonly Dictionary<char, int> piece_values = new Dictionary<char, int>
     {
@@ -16,30 +39,28 @@ public class Scorer : Board {
         { 'p', 1 }
     };
 
-    public int getPieceScore(string curFen){
-        //yalls methods are dogshit, this is good - Max
+    public int getPieceScore(Fen f){
         //This only takes account the amount of pieces each player has
+        int whiteScore = 0;
+        int blackScore = 0;
 
-        //my man ur code is the ass one u can do this in like 20 total lines - alex
-        //also can we do something about all the extraneous commented code its hurting my eyes
-        //i didnt test my code either but it works trust
-
-        int score = 0;
-
-        string board = curFen.Split(' ')[0];
+        string board = f.ToString().Split(' ')[0];
         char[] boardCharArray = board.ToCharArray();
         foreach(char c in boardCharArray)
         {
             if (piece_values.ContainsKey(char.ToLower(c)))
             {
                 int pieceScore = piece_values[c];
-                if (!char.IsUpper(c)) pieceScore *= -1;
-
-                score += pieceScore;
+                if(!char.IsUpper(c)) {
+                    whiteScore += pieceScore;
+                }
+                else{
+                blackScore += pieceScore;
+                }
             }
         }
-
-        return score;
+        return (f.getActiveColor() == "w") ? whiteScore - blackScore : blackScore - whiteScore;
+        
 
         /*int whiteScore = 0;
         int blackScore = 0;
@@ -99,7 +120,10 @@ public class Scorer : Board {
             }
         
         return whiteScore - blackScore;*/
+        
     }
+
+    
 
     public int getPositionScore(string curFen){
         //Not Completed, This code will take into account the placement of the piece
@@ -182,4 +206,11 @@ public class Scorer : Board {
             return ' ';
         }
         */
+
+    public void blackPosition(int[] array){
+        int[] black = new int[array.Length];
+        for(int i = 0; i < array.Length; i++){
+            black[i] = array[i] * -1;
+        }
+    }
 }
