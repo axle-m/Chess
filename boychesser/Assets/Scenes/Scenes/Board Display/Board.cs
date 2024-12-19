@@ -54,7 +54,12 @@ public class Board : MonoBehaviour
         CreateGraphicalBoard();
         placePieces();
         PrecomputeMoveData.precomputedMoveData();
-        Debug.Log("Testing");
+
+        string s = "Testing";
+        Debug.Log(s);
+        s = s.Remove(s.IndexOf('i'), 1);
+        Debug.Log(s);
+
     }
 
     private void Update()
@@ -126,7 +131,6 @@ public class Board : MonoBehaviour
                         //if a tile is selected, return the attempted move
                         else if (selectedTile != null)
                         {
-                        
                             string toReturn = Char.ToUpper(selectedTile.getPieceType()) + selectedTile.getName() + tiles[file + rank * 8].getName();
                             selectedTile = null;
                             return toReturn;
@@ -138,7 +142,7 @@ public class Board : MonoBehaviour
         }
 
         return null;
-    } //getAttemptedMove)(;
+    } //getAttemptedMove();
 
     public bool search(string move, string[] moves)
     {
@@ -236,6 +240,11 @@ public class Board : MonoBehaviour
                         tile++;
                         break;
                     default:
+                        for(int k = 0; k < (int)Char.GetNumericValue(row[j]); k++)
+                        {
+                            tiles[tile + k].changeCurPiece('0');
+                           
+                        }
                         tile += (int)Char.GetNumericValue(row[j]);
                         break;
                 }
