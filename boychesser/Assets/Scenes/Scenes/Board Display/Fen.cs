@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -40,13 +41,20 @@ public class Fen
             throw new ArgumentException("Invalid FEN string");
         }
         //assigns each piece of the fen string to a variable
-        //active color is who's turn it is I think
+        //active color is who's turn it is I think 
+            //yes this is correct -alex
+
         Board = parts[0];
         ActiveColor = parts[1];
         CastlingAvailability = parts[2];
         EnPassantTarget = parts[3];
         HalfmoveClock = int.Parse(parts[4]);
         FullmoveNumber = int.Parse(parts[5]);
+    }
+
+    public string getCastlingAvailability()
+    {
+        return CastlingAvailability;
     }
 
     public string getEnPassant()
@@ -73,8 +81,6 @@ public class Fen
     {
         // Parse the FEN string
         var parts = fen.Split(' ');
-        if (parts.Length != 6)
-            throw new ArgumentException("Invalid FEN format");
 
         string board = parts[0];
         string activeColor = parts[1];
@@ -82,14 +88,6 @@ public class Fen
         string enPassant = parts[3];
         int halfmoveClock = int.Parse(parts[4]);
         int fullmoveNumber = int.Parse(parts[5]);
-
-        // Parse the move
-        char piece = move[0];
-
-        piece = activeColor.Equals("w") ? Char.ToUpper(piece) : Char.ToLower(piece);
-
-        string from = move.Substring(1, 2);
-        string to = move.Substring(3, 2);
 
         // Convert board to a 2D array for easier manipulation
         var rows = board.Split('/');
@@ -112,20 +110,65 @@ public class Fen
             }
         }
 
-        // Map positions to 2D indices
-        int fromRow = 8 - int.Parse(from[1].ToString());
-        int fromCol = from[0] - 'a';
-        int toRow = 8 - int.Parse(to[1].ToString());
-        int toCol = to[0] - 'a';
+        // Parse the move
+        char piece = move[0];
 
-        // Update board for the move
-        boardArray[fromRow, fromCol] = '1'; // Empty the source square
-        boardArray[toRow, toCol] = piece; // Place the piece on the destination square
+        piece = activeColor.Equals("w") ? Char.ToUpper(piece) : Char.ToLower(piece);
 
-        if (Char.ToLower(piece) == 'p' && to == enPassant)
+        string from, to;
+
+        from = move.Substring(1, 2);
+        to = move.Substring(3, 2);
+
+        move = normaliseMove(move);
+
+        if (move.Equals("O-O") || move.Equals("O-O-O"))
         {
-            int captureRow = activeColor == "w" ? toRow + 1 : toRow - 1;
-            boardArray[captureRow, toCol] = '1'; // Remove captured pawn
+            int row = activeColor.Equals("w") ? 7 : 0;
+            int kingCol = 4;
+            int rookCol = move.Equals("O-O") ? 7 : 0;
+
+            boardArray[row, kingCol] = '1';
+            boardArray[row, rookCol] = '1';
+            boardArray[row, kingCol + (move.Equals("O-O") ? 2 : -2)] = activeColor.Equals("w") ? 'K' : 'k';
+            boardArray[row, kingCol + (move.Equals("O-O") ? 1 : -1)] = activeColor.Equals("w") ? 'R' : 'r';
+
+            char side = move.Equals("O-O") ? 'k' : 'q';
+            char sideCol = activeColor.Equals("w") ? char.ToUpper(side) : side;
+            castlingRights = castlingRights.Remove(castlingRights.IndexOf(sideCol), 1);
+
+            if (castlingRights.Equals(""))
+            {
+                castlingRights = "-";
+            }
+
+            Debug.Log(castlingRights);
+        }
+
+        else
+        {
+            // Map positions to 2D indices
+            int fromRow = 8 - int.Parse(from[1].ToString());
+            int fromCol = from[0] - 'a';
+            int toRow = 8 - int.Parse(to[1].ToString());
+            int toCol = to[0] - 'a';
+
+            // Update board for the move
+            boardArray[fromRow, fromCol] = '1'; // Empty the source square
+            boardArray[toRow, toCol] = piece; // Place the piece on the destination square
+
+            if (Char.ToLower(piece) == 'p' && to == enPassant)
+            {
+                int captureRow = activeColor.Equals("w") ? toRow + 1 : toRow - 1;
+                boardArray[captureRow, toCol] = '1'; // Remove captured pawn
+            }
+
+            enPassant = "-";
+            if (Char.ToLower(piece) == 'p' && Math.Abs(fromRow - toRow) == 2)
+            {
+                int enPassantRow = activeColor.Equals("b") ? fromRow - 1 : fromRow + 1;
+                enPassant = $"{(char)('a' + fromCol)}{8 - enPassantRow}";
+            }
         }
 
         // Rebuild the board string
@@ -137,7 +180,7 @@ public class Fen
             {
                 if (boardArray[r, c] == '1')
                 {
-                    emptyCount++;
+                    emptyCount++; 
                 }
                 else
                 {
@@ -155,19 +198,14 @@ public class Fen
 
         // Update active color
         activeColor = activeColor.Equals("w") ? "b" : "w";
-
-        enPassant = "-";
-        if (Char.ToLower(piece) == 'p' && Math.Abs(fromRow - toRow) == 2)
-        {
-            int enPassantRow = activeColor == "b" ? fromRow - 1 : fromRow + 1;
-            enPassant = $"{(char)('a' + fromCol)}{8 - enPassantRow}";
-        }
+        Debug.Log(activeColor);
 
         // Update halfmove clock
-        if (Char.ToLower(piece) == 'p' || boardArray[toRow, toCol] != '1')
+        if (Char.ToLower(piece) == 'p')
         {
             halfmoveClock = 0; // Reset halfmove clock on pawn move or capture
         }
+
         else
         {
             halfmoveClock++;
@@ -179,7 +217,7 @@ public class Fen
             fullmoveNumber++;
         }
 
-        Debug.Log(enPassant);
+        //Debug.Log(enPassant);
 
         // Assemble the new FEN
         return $"{newBoard} {activeColor} {castlingRights} {enPassant} {halfmoveClock} {fullmoveNumber}";
@@ -221,5 +259,25 @@ public class Fen
         }
 
         return tiles;
+    }
+
+    private static string normaliseMove(string move)    //could also use this to add pgn compatibility
+    {
+
+        Debug.Log(move);
+
+        if (char.ToLower(move[0]) == 'k')
+        {
+            if(move == "Ke1g1" || move == "Ke8g8")
+            {
+                return "O-O";
+            }
+            else if(move == "Ke1c1" || move == "Ke8c8")
+            {
+                return "O-O-O";
+            }
+        }
+
+        return move;    //return literal move for now, will implement other normalisations later
     }
 }
