@@ -174,7 +174,8 @@ public class Scorer : Board {
         return (f.getActiveColor() == "w") ? whiteScore - blackScore : blackScore - whiteScore;
     }
         
-        public double getPositionScore(Fen f){
+    public double getPositionScore(Fen f){
+        //Takes into account position of pieces
         double whiteScore = 0;
         double blackScore = 0;
 
@@ -253,13 +254,8 @@ public class Scorer : Board {
             }
         
         return whiteScore - blackScore;*/
-        
-}
-
     
 
-
-        
         //var fenList = new ArrayList();
         
         /* foreach (char c in fenArr)
@@ -324,3 +320,4 @@ public class Scorer : Board {
             return ' ';
         }
         */
+}
