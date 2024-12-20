@@ -21,7 +21,7 @@ public class LegalMovesList
         return false;
     }
     //generate a list of legal moves in a fen string array
-    public static String[] getLegalMoves(Fen fen)
+    public static string[] getLegalMoves(Fen fen)
     {
 
         Tile[] tiles = fen.fenToTiles();    

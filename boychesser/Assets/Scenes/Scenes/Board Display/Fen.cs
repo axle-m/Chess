@@ -23,7 +23,7 @@ public class Fen
         ParseFen(fen);
     }
 
-    private void ParseFen(string fen)
+    public void ParseFen(string fen)
     {
         //split fen string into 6 parts with delimiter of a space char
         //ai did this and idk anything about fen strings so not sure if this is accurate
