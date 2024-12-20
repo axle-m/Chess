@@ -8,7 +8,7 @@ public class Scorer : Board {
     // char[] bPieces = new char[] { 'q', 'r', 'r', 'b', 'b', 'n', 'n', 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' };
     //https://www.freecodecamp.org/news/simple-chess-ai-step-by-step-1d55a9266977/
 
-    double[,] whiteKingPos = new double[,] {{2, 3, 1, 0, 0, 1, 3, 2},
+    static double[,] whiteKingPos = new double[,] {{2, 3, 1, 0, 0, 1, 3, 2},
                                         {2, 2, 0, 0, 0, 0, 2, 2}, 
                                         {-1, -2, -2, -2, -2, -2, -2, -1}, 
                                         {-2, -3, -3, -4, -4, -3, -3, -2},
@@ -17,7 +17,7 @@ public class Scorer : Board {
                                         {-3, -4, -4, -5, -5, -4, -4, -3},
                                         {-3, -4, -4, -5, -5, -4, -4, -3}};
     
-    double[,] blackKingPos = new double[,] {{-3, -4, -4, -5, -5, -4, -4, -3},
+    static double[,] blackKingPos = new double[,] {{-3, -4, -4, -5, -5, -4, -4, -3},
                                             {-3, -4, -4, -5, -5, -4, -4, -3},
                                             {-3, -4, -4, -5, -5, -4, -4, -3}, 
                                             {-3, -4, -4, -5, -5, -4, -4, -3},
@@ -26,7 +26,7 @@ public class Scorer : Board {
                                             {2, 2, 0, 0, 0, 0, 2, 2},
                                             {2, 3, 1, 0, 0, 1, 3, 2},};
     
-    double[,] whiteQueenPos = new double[,] {{-2, -1, -1, -0.5, -0.5, -1, -1, -2},
+    static double[,] whiteQueenPos = new double[,] {{-2, -1, -1, -0.5, -0.5, -1, -1, -2},
                                             {-1, 0, 0.5, 0, 0, 0, 0, -1},
                                             {-1, 0.5, 0.5, 0.5, 0.5, 0.5, 0, -1},
                                             {0, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5},
@@ -35,7 +35,7 @@ public class Scorer : Board {
                                             {-1, 0, 0, 0, 0, 0, 0, -1},
                                             {-2, -1, -1, -0.5, -0.5, -1, -1, -2}};
 
-    double[,] blackQueenPos = new double[,] {{-2, -1, -1, -0.5, -0.5, -1, -1, -2},
+    static double[,] blackQueenPos = new double[,] {{-2, -1, -1, -0.5, -0.5, -1, -1, -2},
                                              {-1, 0, 0, 0, 0, 0, 0, -1},
                                              {-1, 0, 0.5, 0.5, 0.5, 0.5, 0, -1},
                                              {-0.5, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5},
@@ -45,7 +45,7 @@ public class Scorer : Board {
                                              {-2, -1, -1, -0.5, -0.5, -1, -1, -2}};
 
 
-    double[,] whiteRookPos = new double[,] {{0, 0, 0, 0.5, 0.5, 0, 0,0},
+    static double[,] whiteRookPos = new double[,] {{0, 0, 0, 0.5, 0.5, 0, 0,0},
                                             {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
                                             {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
                                             {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
@@ -54,7 +54,7 @@ public class Scorer : Board {
                                             {0.5, 1, 1, 1, 1, 1, 1, 0.5},
                                             {0, 0, 0, 0, 0, 0, 0, 0}};
 
-    double[,] blackRookPos = new double[,] {{0, 0, 0, 0, 0, 0, 0, 0},
+    static double[,] blackRookPos = new double[,] {{0, 0, 0, 0, 0, 0, 0, 0},
                                             {0.5, 1, 1, 1, 1, 1, 1, 0.5},
                                             {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
                                             {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
@@ -63,7 +63,7 @@ public class Scorer : Board {
                                             {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
                                             {0, 0, 0, 0.5, 0.5, 0, 0,0}};
 
-    double[,] whiteBishopPos = new double[,] {{-2, -1, -1, -1, -1, -1, -1, -2},
+    static double[,] whiteBishopPos = new double[,] {{-2, -1, -1, -1, -1, -1, -1, -2},
                                               {-1, 0.5, 0, 0, 0, 0, 0.5, -1},
                                               {-1, 1, 1, 1, 1, 1, 1, -1},
                                               {-1, 0, 1, 1, 1, 1, 0, -1},
@@ -72,7 +72,7 @@ public class Scorer : Board {
                                               {-1, 0, 0, 0, 0, 0, 0, -1},
                                               {-2, -1, -1, -1, -1, -1, -1, -2}};
 
-    double[,] blackBishopPos = new double[,] {{-2, -1, -1, -1, -1, -1, -1, -2},
+    static double[,] blackBishopPos = new double[,] {{-2, -1, -1, -1, -1, -1, -1, -2},
                                               {-1, 0, 0, 0, 0, 0, 0, -1},
                                               {-1, 0, 0.5, 1, 1, 0.5, 0, -1},
                                               {-1, 0.5, 0.5, 1, 1, 0.5, 0.5, -1},
@@ -81,7 +81,7 @@ public class Scorer : Board {
                                               {-1, 0.5, 0, 0, 0, 0, 0.5, -1},
                                               {-2, -1, -1, -1, -1, -1, -1, -2}};
 
-    double[,] whiteKnightPos = new double[,] {{-5, -4, -3, -3, -3, -3, -4, -5},
+    static double[,] whiteKnightPos = new double[,] {{-5, -4, -3, -3, -3, -3, -4, -5},
                                               {-4, -2, 0, 0.5, 0.5, 0, -2, -4},
                                               {-3, 0.5, 1.5, 2, 2, 1.5, 0, -3},
                                               {-3, 0.5, 1.5, 2, 2, 1.5, 0.5, -3},
@@ -90,7 +90,7 @@ public class Scorer : Board {
                                               {-4, -2, 0, 0, 0, 0, -2, -4},
                                               {-5, -4, -3, -3, -3, -3, -4, -5}};
 
-    double[,] blackKnightPos = new double[,] {{-5, -4, -3, -3, -3, -3, -4, -5},
+    static double[,] blackKnightPos = new double[,] {{-5, -4, -3, -3, -3, -3, -4, -5},
                                               {-4, -2, 0, 0, 0, 0, -2, -4},
                                               {-3, 0, 1, 1.5, 1.5, 1, 0, -3},
                                               {-3, 0.5, 1.5, 2, 2, 1.5, 0.5, -1},
@@ -99,21 +99,23 @@ public class Scorer : Board {
                                               {-4, -2, 0, 0.5, 0.5, 0, -2, -4},
                                               {-5, -4, -3, -3, -3, -3, -4, -5}};
 
-    double[,] whitePawnPos = new double[,] {{0, 0, 0, 0, 0, 0, 0, 0},
+    static double[,] whitePawnPos = new double[,] {{0, 0, 0, 0, 0, 0, 0, 0},
                                             {0.5, 1, 1, -2, -2, 1, 1, 0.5},
                                             {0.5, -0.5, -1, 0, 0, -1, -0.5, 0.5},
                                             {0, 0, 0, 2, 2, 0, 0, 0},
                                             {0.5, 0.5, 1, 2.5, 2.5, 1, 0.5, 0.5},
                                             {1, 1, 2, 3, 3, 2, 1, 1},
+                                            {5, 5, 5, 5, 5, 5, 5, 5},
                                             {0, 0, 0, 0, 0, 0, 0, 0}};
                                             
-    double[,] blackPawnPos = new double[,] {{0, 0, 0, 0, 0, 0, 0, 0},
+    static double[,] blackPawnPos = new double[,] {{0, 0, 0, 0, 0, 0, 0, 0},
+                                            {5, 5, 5, 5, 5, 5, 5, 5},
                                             {1, 1, 2, 3, 3, 2, 1, 1},
                                             {0.5, 0.5, 1, 2.5, 2.5, 1, 0.5, 0.5},
                                             {0, 0, 0, 2, 2, 0, 0, 0},
                                             {0.5, -0.5, -1, 0, 0, -1, -0.5, 0.5},
                                             {0.5, 1, 1, -2, -2, 1, 1, 0.5},
-                                            {0, 0, 0, 0, 0, 0, 0, 0}}
+                                            {0, 0, 0, 0, 0, 0, 0, 0}};
 
 
 
@@ -127,19 +129,41 @@ public class Scorer : Board {
         { 'p', 1 }
     };
 
-    public int getPieceScore(Fen f){
+    static readonly Dictionary<char, double[,]> piecePosition = new Dictionary<char, double[,]>
+    {
+        //Assigns each piece it's array so it's easy to access and more readable rather than:
+        // if(c == k){
+        //     blackKingPos...
+        // }
+        // else if(c == q){
+        //     blackQueenPos...
+        // }
+
+        { 'k', blackKingPos },   
+        { 'q', blackQueenPos }, 
+        { 'r', blackRookPos }, 
+        { 'b', blackBishopPos },     
+        { 'n', blackKnightPos }, 
+        { 'p', blackPawnPos },
+        { 'K', whiteKingPos },   
+        { 'Q', whiteQueenPos }, 
+        { 'R', whiteRookPos }, 
+        { 'B', whiteBishopPos },     
+        { 'N', whiteKnightPos }, 
+        { 'P', whitePawnPos }
+    };    
+
+    public double getPieceScore(Fen f){
         //This only takes account the amount of pieces each player has
-        int whiteScore = 0;
-        int blackScore = 0;
+        double whiteScore = 0;
+        double blackScore = 0;
 
         string board = f.ToString().Split(' ')[0];
         char[] boardCharArray = board.ToCharArray();
-        foreach(char c in boardCharArray)
-        {
-            if (piece_values.ContainsKey(char.ToLower(c)))
-            {
+        foreach(char c in boardCharArray){
+            if (piece_values.ContainsKey(char.ToLower(c))){
                 int pieceScore = piece_values[c];
-                if(!char.IsUpper(c)) {
+                if(char.IsUpper(c)) {
                     whiteScore += pieceScore;
                 }
                 else{
@@ -148,7 +172,28 @@ public class Scorer : Board {
             }
         }
         return (f.getActiveColor() == "w") ? whiteScore - blackScore : blackScore - whiteScore;
+    }
         
+        public double getPositionScore(Fen f){
+        double whiteScore = 0;
+        double blackScore = 0;
+
+        string board = f.ToString().Split(' ')[0];
+        char[] boardCharArray = board.ToCharArray();
+        for(int i = 0; i < boardCharArray.Length; i++){
+            if (piece_values.ContainsKey(boardCharArray[i])){
+                if(char.IsUpper(boardCharArray[i])){
+                    double[,] positionValues = piecePosition[boardCharArray[i]];
+                    whiteScore += piece_values[boardCharArray[i]] + positionValues[(int)i/8, i%8];
+                }
+                else{
+                    double[,] positionValues = piecePosition[boardCharArray[i]];
+                    blackScore += piece_values[boardCharArray[i]] + positionValues[(int)i/8, i%8];
+                }
+            }
+        }
+        return (f.getActiveColor() == "w") ? whiteScore - blackScore : blackScore - whiteScore;
+    }
 
         /*int whiteScore = 0;
         int blackScore = 0;
@@ -209,26 +254,11 @@ public class Scorer : Board {
         
         return whiteScore - blackScore;*/
         
-    }
+}
 
     
 
-    public int getPositionScore(string curFen){
-        //Not Completed, This code will take into account the placement of the piece
-        //This website has the points for each position: https://www.freecodecamp.org/news/simple-chess-ai-step-by-step-1d55a9266977/
-        int whiteScore = 0;
-        int blackScore = 0;
-        string[] parts = curFen.Split(' ');
-        string[] board = parts[0].Split('/');
-        for(int i = 0; i < board.Length; i++){
-            for(int j = 0; j < board[i].Length; j++){
-                if(char.IsLetter(board[i][j])){
-                    
-                }
-            }
-        }
-        return 0;
-    }
+
         
         //var fenList = new ArrayList();
         
@@ -294,11 +324,3 @@ public class Scorer : Board {
             return ' ';
         }
         */
-
-    public void blackPosition(int[] array){
-        int[] black = new int[array.Length];
-        for(int i = 0; i < array.Length; i++){
-            black[i] = array[i] * -1;
-        }
-    }
-}
