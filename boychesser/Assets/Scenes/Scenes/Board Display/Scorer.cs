@@ -125,7 +125,7 @@ public class Scorer : Board {
 
     
 
-    public int getPositionScore(string curFen){
+    public static int getPositionScore(string curFen){
         //Not Completed, This code will take into account the placement of the piece
         //This website has the points for each position: https://www.freecodecamp.org/news/simple-chess-ai-step-by-step-1d55a9266977/
         int whiteScore = 0;

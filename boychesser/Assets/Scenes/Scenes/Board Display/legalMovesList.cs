@@ -109,7 +109,7 @@ public class LegalMovesList
                         }
                         if (c == 'Q' && tiles[1].getPieceType() == '0' && tiles[2].getPieceType() == '0' && tiles[3].getPieceType() == '0' && !putsInCheck(2, tiles) && !putsInCheck(3, tiles))
                         {
-                            string s = "K" + tiles[start].getName() + tiles[1].getName();
+                            string s = "K" + tiles[start].getName() + tiles[2].getName();
                             moves.Add(s);
                             tiles[2].setLegalMove(true);
 

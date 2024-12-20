@@ -42,7 +42,7 @@ public class Fen
         }
         //assigns each piece of the fen string to a variable
         //active color is who's turn it is I think 
-            //yes this is correct -alex
+        //yes this is correct -alex
 
         Board = parts[0];
         ActiveColor = parts[1];
@@ -133,10 +133,6 @@ public class Fen
             boardArray[row, kingCol + (move.Equals("O-O") ? 2 : -2)] = activeColor.Equals("w") ? 'K' : 'k';
             boardArray[row, kingCol + (move.Equals("O-O") ? 1 : -1)] = activeColor.Equals("w") ? 'R' : 'r';
 
-            char side = move.Equals("O-O") ? 'k' : 'q';
-            char sideCol = activeColor.Equals("w") ? char.ToUpper(side) : side;
-            castlingRights = castlingRights.Remove(castlingRights.IndexOf(sideCol), 1);
-
             if (castlingRights.Equals(""))
             {
                 castlingRights = "-";
@@ -145,6 +141,7 @@ public class Fen
             Debug.Log(castlingRights);
         }
 
+        
         else
         {
             // Map positions to 2D indices
@@ -171,6 +168,58 @@ public class Fen
             }
         }
 
+        //update castling rights
+        if (boardArray[7, 4] != 'K')
+        {
+            if (castlingRights.Contains("K"))
+            {
+                castlingRights = castlingRights.Replace("K", "");
+            }
+            if (castlingRights.Contains("Q"))
+            {
+                castlingRights = castlingRights.Replace("Q", "");
+            }
+        }
+        if (boardArray[7, 0] != 'R')
+        {
+            if (castlingRights.Contains("Q"))
+            {
+                castlingRights = castlingRights.Replace("Q", "");
+            }
+        }
+        if (boardArray[7, 7] != 'R')
+        {
+            if (castlingRights.Contains("K"))
+            {
+                castlingRights = castlingRights.Replace("K", "");
+            }
+        }
+        if (boardArray[0, 4] != 'k')
+        {
+            if (castlingRights.Contains("k"))
+            {
+                castlingRights.Replace("k", "");
+            }
+            if (castlingRights.Contains("q"))
+            {
+                castlingRights.Replace("q", "");
+            }
+        }
+        if (boardArray[0,0] != 'r')
+        {
+            if (castlingRights.Contains("q"))
+            {
+                castlingRights.Replace("q", "");
+            }
+        }
+        if (boardArray[0,7] != 'r')
+        {
+            if (castlingRights.Contains("k"))
+            {
+                castlingRights.Replace("k", "");
+            }
+        }
+
         // Rebuild the board string
         string newBoard = string.Join("/", Enumerable.Range(0, 8).Select(r =>
         {
@@ -180,7 +229,7 @@ public class Fen
             {
                 if (boardArray[r, c] == '1')
                 {
-                    emptyCount++; 
+                    emptyCount++;
                 }
                 else
                 {
@@ -268,11 +317,11 @@ public class Fen
 
         if (char.ToLower(move[0]) == 'k')
         {
-            if(move == "Ke1g1" || move == "Ke8g8")
+            if (move.Equals("Ke1g1") || move.Equals("Ke8g8"))
             {
                 return "O-O";
             }
-            else if(move == "Ke1c1" || move == "Ke8c8")
+            else if (move.Equals("Ke1c1") || move.Equals("Ke8c8"))
             {
                 return "O-O-O";
             }
