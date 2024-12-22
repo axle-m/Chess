@@ -49,26 +49,40 @@ public class ChessBot : MonoBehaviour
         Debug.Log($"Best move: {bestMove}");
     }
 
-    void positionMoveAttempt(LegalMovesList legalMovesList){
+    string bestPositionMove(LegalMovesList legalMovesList){
         //Make a 2d array
-        // In the inner array, first index is the move, the second index is the value
-        //Store them as strings, String.GetNumbericalValue
+        //Inside each array, first index is the move, the second index is the value
+        //Store them as strings, String.GetNumbericalValue to get the second value
 
         //List<string[]> ints = new List<string[]>();
         //int val = int.Parse(ints[index][1]);
+        double highestValue = 0;
+        int index = 0;
         string[] currentLegalMoves = (string[])legalMovesList.getLegalMoves(board.curFen);
         List<string[]> movesAndValueList = new List<string[]>();
         string fenString = board.curFen.ToString();
         for(int i = 0; i < currentLegalMoves.Length; i++){
-            //scoring = fen object
-            //move = fen string
-            string[] movesAndValueArray = {currentLegalMoves[i], getCurrentScoring(Fen.move(fenString, currentLegalMoves[i]))};
+            Fen move = new Fen(Fen.move(fenString, currentLegalMoves[i]));
+            double moveValue = getPositionScoring(move);
+            if(moveValue > highestValue){
+                highestValue = moveValue;
+                index = i;
+            }
+            string[] movesAndValueArray = {currentLegalMoves[i], moveValue.ToString()};
             movesAndValueList.Add(movesAndValueArray);
         }
+        return currentLegalMoves[index];
+        //This returns the best possible move based on position however more can be done
+        //We can use the 2d array (movesAndValueList) choose between the best 1-3 or 1-5 
+        //It should still favor the best move  the probability could be something like ⌄⌄⌄
+        //(1st - 70%, 2nd - 15%, 3rd - 5%, 4th - 5%, 5th - 5%)?
+        //We could keep track of those indicies or sort the arrays to figure this out
+
+        //Question: Should this return a string (move played) or fen (curFen + move played)?
     }
 
     // Gets the scoring for a specific board position
-    public double getCurrentScoring(Fen fen){
+    public double getPositionScoring(Fen fen){
         return Scorer.getPositionScore(fen); 
     }
 }
