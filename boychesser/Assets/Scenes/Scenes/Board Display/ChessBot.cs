@@ -11,7 +11,7 @@ public class ChessBot : MonoBehaviour
 
     void Start()
     {
-        randomMove();
+
     }
 
     void Update()
@@ -19,35 +19,36 @@ public class ChessBot : MonoBehaviour
     }
 
     // Selects a random legal move and logs it
-    void randomMove(){
+    void randomMove(LegalMovesList legalMovesList){
         String[] currentLegalMoves = (string[])legalMovesList.getLegalMoves(board.curFen);
         System.Random rnd = new System.Random();
         string move = currentLegalMoves[rnd.Next(currentLegalMoves.Length)];
         Debug.Log(move);
     }
 
-    void moveAttempt(int scorer, bool isWhite){
-        String[] currentLegalMoves = (string[])legalMovesList.getLegalMoves(board.curFen);
-        string bestMove = null;
+    //I think this code can be ignored, sorry Max
+    // void moveAttempt(int scorer, bool isWhite){
+    //     String[] currentLegalMoves = (string[])legalMovesList.getLegalMoves(board.curFen);
+    //     string bestMove = null;
 
-        if (isWhite){
-            for (int i = 0; i < currentLegalMoves.Length; i++){
-                string move = currentLegalMoves[i];
-                if (bestMove == null || getCurrentScoring(move) > getCurrentScoring(bestMove)){
-                    bestMove = move;
-                }
-            }
-        }
-        else{ // if bot is black
-            for (int i = 0; i < currentLegalMoves.Length; i++){
-                string move = currentLegalMoves[i];
-                if (bestMove == null || getCurrentScoring(move) < getCurrentScoring(bestMove)){
-                    bestMove = move;
-                }
-            }
-        }
-        Debug.Log($"Best move: {bestMove}");
-    }
+    //     if (isWhite){
+    //         for (int i = 0; i < currentLegalMoves.Length; i++){
+    //             string move = currentLegalMoves[i];
+    //             if (bestMove == null || getCurrentScoring(move) > getCurrentScoring(bestMove)){
+    //                 bestMove = move;
+    //             }
+    //         }
+    //     }
+    //     else{ // if bot is black
+    //         for (int i = 0; i < currentLegalMoves.Length; i++){
+    //             string move = currentLegalMoves[i];
+    //             if (bestMove == null || getCurrentScoring(move) < getCurrentScoring(bestMove)){
+    //                 bestMove = move;
+    //             }
+    //         }
+    //     }
+    //     Debug.Log($"Best move: {bestMove}");
+    // }
 
     string bestPositionMove(LegalMovesList legalMovesList){
         //Make a 2d array
@@ -72,6 +73,10 @@ public class ChessBot : MonoBehaviour
             movesAndValueList.Add(movesAndValueArray);
         }
         return currentLegalMoves[index];
+
+        //Goes through all legal moves, Applies scorer, stores move, returns move with highest value
+
+
         //This returns the best possible move based on position however more can be done
         //We can use the 2d array (movesAndValueList) choose between the best 1-3 or 1-5 
         //It should still favor the best move  the probability could be something like ⌄⌄⌄
@@ -81,8 +86,32 @@ public class ChessBot : MonoBehaviour
         //Question: Should this return a string (move played) or fen (curFen + move played)?
     }
 
-    // Gets the scoring for a specific board position
+    string bestPieceMove(LegalMovesList legalMovesList){
+        double highestValue = 0;
+        int index = 0;
+        string[] currentLegalMoves = (string[])legalMovesList.getLegalMoves(board.curFen);
+        List<string[]> movesAndValueList = new List<string[]>();
+        string fenString = board.curFen.ToString();
+        for(int i = 0; i < currentLegalMoves.Length; i++){
+            Fen move = new Fen(Fen.move(fenString, currentLegalMoves[i]));
+            double moveValue = getPieceScoring(move);
+            if(moveValue > highestValue){
+                highestValue = moveValue;
+                index = i;
+            }
+            string[] movesAndValueArray = {currentLegalMoves[i], moveValue.ToString()};
+            movesAndValueList.Add(movesAndValueArray);
+        }
+        return currentLegalMoves[index];
+        //This is a copy-paste of the position mover just different scorer used
+    }
+
+
     public double getPositionScoring(Fen fen){
         return Scorer.getPositionScore(fen); 
+    }
+
+    public double getPieceScoring(Fen fen){
+        return Scorer.getPieceScore(fen); 
     }
 }

@@ -153,7 +153,7 @@ public class Scorer : Board {
         { 'P', whitePawnPos }
     };    
 
-    public double getPieceScore(Fen f){
+    public static double getPieceScore(Fen f){
         //This only takes account the amount of pieces each player has
         double whiteScore = 0;
         double blackScore = 0;
