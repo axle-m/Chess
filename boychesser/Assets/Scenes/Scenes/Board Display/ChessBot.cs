@@ -23,33 +23,10 @@ public class ChessBot : MonoBehaviour
         String[] currentLegalMoves = (string[])legalMovesList.getLegalMoves(board.curFen);
         System.Random rnd = new System.Random();
         string move = currentLegalMoves[rnd.Next(currentLegalMoves.Length)];
-        Debug.Log(move);
+        Debug.Log(move);//maybe instead of move add something more specific like "Evaluating move (currentLegalMoves[i] with score {score}");
     }
 
-    //I think this code can be ignored, sorry Max
-    // void moveAttempt(int scorer, bool isWhite){
-    //     String[] currentLegalMoves = (string[])legalMovesList.getLegalMoves(board.curFen);
-    //     string bestMove = null;
-
-    //     if (isWhite){
-    //         for (int i = 0; i < currentLegalMoves.Length; i++){
-    //             string move = currentLegalMoves[i];
-    //             if (bestMove == null || getCurrentScoring(move) > getCurrentScoring(bestMove)){
-    //                 bestMove = move;
-    //             }
-    //         }
-    //     }
-    //     else{ // if bot is black
-    //         for (int i = 0; i < currentLegalMoves.Length; i++){
-    //             string move = currentLegalMoves[i];
-    //             if (bestMove == null || getCurrentScoring(move) < getCurrentScoring(bestMove)){
-    //                 bestMove = move;
-    //             }
-    //         }
-    //     }
-    //     Debug.Log($"Best move: {bestMove}");
-    // }
-
+   
     string bestPositionMove(LegalMovesList legalMovesList){
         //Make a 2d array
         //Inside each array, first index is the move, the second index is the value
@@ -62,6 +39,10 @@ public class ChessBot : MonoBehaviour
         string[] currentLegalMoves = (string[])legalMovesList.getLegalMoves(board.curFen);
         List<string[]> movesAndValueList = new List<string[]>();
         string fenString = board.curFen.ToString();
+        if(currentLegalMoves.Length == 0){
+            Debug.LogWarning("No legal moves available");
+             return null;
+             }
         for(int i = 0; i < currentLegalMoves.Length; i++){
             Fen move = new Fen(Fen.move(fenString, currentLegalMoves[i]));
             double moveValue = getPositionScoring(move);
@@ -85,6 +66,36 @@ public class ChessBot : MonoBehaviour
 
         //Question: Should this return a string (move played) or fen (curFen + move played)?
     }
+    // HEY GUYS READ THIS: how about we compress the best position move and the best piece move into one class?
+    /*this is a possible implementation of this: 
+    string GetBestMove(LegalMovesList legalMovesList, Func<Fen, double> scoringFunction){
+    double highestValue = double.MinValue;
+    int index = -1;
+    string[] currentLegalMoves = (string[])legalMovesList.getLegalMoves(board.curFen);
+    string fenString = board.curFen;
+
+
+    for (int i = 0; i < currentLegalMoves.Length; i++)
+    {
+        Fen move = new Fen(Fen.move(fenString, currentLegalMoves[i]));
+        double score = scoringFunction(move);
+
+
+        if (score > highestValue)
+        {
+            highestValue = score;
+            index = i;
+        }
+    }
+
+
+    return index >= 0 ? currentLegalMoves[index] : null; // Handle no valid moves
+}*/
+// ALSO we should also be able to call this new class with something like string bestPosition(or)PieceMove = GetBestMove(legalMovesList, getPositionScoring);
+
+
+
+
 
     string bestPieceMove(LegalMovesList legalMovesList){
         double highestValue = 0;
@@ -92,6 +103,10 @@ public class ChessBot : MonoBehaviour
         string[] currentLegalMoves = (string[])legalMovesList.getLegalMoves(board.curFen);
         List<string[]> movesAndValueList = new List<string[]>();
         string fenString = board.curFen.ToString();
+        if(currentLegalMoves.Length == 0){
+            Debug.LogWarning("No legal moves available");  //ADDED THIS just in case of checkmate bugs - Max
+             return null;
+             }
         for(int i = 0; i < currentLegalMoves.Length; i++){
             Fen move = new Fen(Fen.move(fenString, currentLegalMoves[i]));
             double moveValue = getPieceScoring(move);

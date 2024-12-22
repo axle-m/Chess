@@ -131,13 +131,7 @@ public class Scorer : Board {
 
     static readonly Dictionary<char, double[,]> piecePosition = new Dictionary<char, double[,]>
     {
-        //Assigns each piece it's array so it's easy to access and more readable rather than:
-        // if(c == k){
-        //     blackKingPos...
-        // }
-        // else if(c == q){
-        //     blackQueenPos...
-        // }
+
 
         { 'k', blackKingPos },   
         { 'q', blackQueenPos }, 
@@ -159,6 +153,7 @@ public class Scorer : Board {
         double blackScore = 0;
 
         string board = f.ToString().Split('/')[0];
+        
         char[] boardCharArray = board.ToCharArray();
         foreach(char c in boardCharArray){
             if (piece_values.ContainsKey(char.ToLower(c))){
