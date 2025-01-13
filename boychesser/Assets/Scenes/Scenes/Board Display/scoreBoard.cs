@@ -17,6 +17,6 @@ public class scoreBoard : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        whiteScore = Scorer.getPieceScore();
+        whiteScore = Scorer.getPieceScore(Board.curFen);
     }
 }

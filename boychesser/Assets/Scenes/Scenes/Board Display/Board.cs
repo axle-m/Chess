@@ -36,7 +36,7 @@ public class Board : MonoBehaviour
 
     public const string START_FEIN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-    public Fen curFen;
+    public static Fen curFen;
 
     //tiles
     public const float tileSize = 1.0f;
