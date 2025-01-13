@@ -4,10 +4,17 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class ChessBot : MonoBehaviour
+public class ChessBot
 {
-    public Board board;
-    public LegalMovesList legalMovesList;
+    
+    /* a couple of things:
+     * methods in this class should be static
+     * the bot takes in a board and an array of legal moves
+     * there should be a method bestMove(String[] moves, String board) that returns the best move
+     * 
+     * Also you're currently passing in a LegalMovesList object, and then using it to create an array of legal moves. You should be using a string array. Refer to randomMove for how it should be implemented
+     * although i did modify the other method signatures to take in a string array instead of a LegalMovesList object and a fen string to describe a board
+     */
 
     void Start()
     {
@@ -19,30 +26,27 @@ public class ChessBot : MonoBehaviour
     }
 
     // Selects a random legal move and logs it
-    void randomMove(LegalMovesList legalMovesList){
-        String[] currentLegalMoves = (string[])legalMovesList.getLegalMoves(board.curFen);
+    public static string randomMove(String[] moves){
         System.Random rnd = new System.Random();
-        string move = currentLegalMoves[rnd.Next(currentLegalMoves.Length)];
-        Debug.Log(move);//maybe instead of move add something more specific like "Evaluating move (currentLegalMoves[i] with score {score}");
+        string move = moves[rnd.Next(0, moves.Length)];
+        Debug.Log(move + " bot move");//maybe instead of move add something more specific like "Evaluating move (currentLegalMoves[i] with score {score}");
+        return move;
     }
 
    
-    string bestPositionMove(LegalMovesList legalMovesList){
+    string bestPositionMove(String[] currentLegalMoves, String fenString){
         //Make a 2d array
         //Inside each array, first index is the move, the second index is the value
         //Store them as strings, String.GetNumbericalValue to get the second value
 
-        //List<string[]> ints = new List<string[]>();
+        List<string[]> movesAndValueList = new List<string[]>();
         //int val = int.Parse(ints[index][1]);
         double highestValue = 0;
         int index = 0;
-        string[] currentLegalMoves = (string[])legalMovesList.getLegalMoves(board.curFen);
-        List<string[]> movesAndValueList = new List<string[]>();
-        string fenString = board.curFen.ToString();
         if(currentLegalMoves.Length == 0){
             Debug.LogWarning("No legal moves available");
-             return null;
-             }
+            return null;
+        }
         for(int i = 0; i < currentLegalMoves.Length; i++){
             Fen move = new Fen(Fen.move(fenString, currentLegalMoves[i]));
             double moveValue = getPositionScoring(move);
@@ -97,16 +101,16 @@ public class ChessBot : MonoBehaviour
 
 
 
-    string bestPieceMove(LegalMovesList legalMovesList){
+    string bestPieceMove(String[] currentLegalMoves, String fenString)
+    {
         double highestValue = 0;
         int index = 0;
-        string[] currentLegalMoves = (string[])legalMovesList.getLegalMoves(board.curFen);
         List<string[]> movesAndValueList = new List<string[]>();
-        string fenString = board.curFen.ToString();
         if(currentLegalMoves.Length == 0){
             Debug.LogWarning("No legal moves available");  //ADDED THIS just in case of checkmate bugs - Max
-             return null;
-             }
+                                                           //good forsight but i dont have checks implemented and i think we'll stick to a pseudo legal moves list where a position without a king is checkmate and the bot scoring algorithm should prevent it from giving up the king
+            return null;
+        }
         for(int i = 0; i < currentLegalMoves.Length; i++){
             Fen move = new Fen(Fen.move(fenString, currentLegalMoves[i]));
             double moveValue = getPieceScoring(move);

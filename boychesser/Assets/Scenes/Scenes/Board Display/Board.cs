@@ -36,7 +36,7 @@ public class Board : MonoBehaviour
 
     public const string START_FEIN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-    public Fen curFen;
+    public static Fen curFen;
 
     //tiles
     public const float tileSize = 1.0f;
@@ -46,9 +46,15 @@ public class Board : MonoBehaviour
     readonly string[] files = new string[] { "1", "2", "3", "4", "5", "6", "7", "8" };
 
     Tile selectedTile = null;
+    private string botColor;
 
     void Start()
     {
+
+        //randomly select bot color
+        System.Random random = new System.Random();
+        botColor = random.Next(0, 2) == 0 ? "w" : "b";
+
         curFen = new Fen(START_FEIN);
 
         CreateGraphicalBoard();
@@ -64,26 +70,29 @@ public class Board : MonoBehaviour
 
     private void Update()
     {
-        tryMove();
+        Debug.Log("Active: " + curFen.getActiveColor());
+        Debug.Log("Bot: " + botColor);
+
+        if (curFen.getActiveColor().Equals(botColor))
+        {
+            String[] moves = LegalMovesList.getLegalMoves(curFen);
+            curFen = new Fen(Fen.move(curFen.ToString(), ChessBot.randomMove(moves)));
+            placePieces();
+        }
+        else tryMove();
     }
 
     void tryMove()
     {
+        String[] moves = LegalMovesList.getLegalMoves(curFen);
         string move = getAttemptedMove();
         if(move != null)
         {
-            String[] moves = LegalMovesList.getLegalMoves(curFen);
             if(search(move, moves))
             {
 
                 curFen = new Fen(Fen.move(curFen.ToString(), move));
 
-                GameObject[] pieces = GameObject.FindGameObjectsWithTag("piece");
-                foreach (GameObject obj in pieces)
-                {
-                    Destroy(obj);
-                }
-                
                 placePieces();
             }
             else
@@ -155,6 +164,12 @@ public class Board : MonoBehaviour
 
     void placePieces()
     {
+        GameObject[] pieces = GameObject.FindGameObjectsWithTag("piece");
+        foreach (GameObject obj in pieces)
+        {
+            Destroy(obj);
+        }
+
         string[] rows = curFen.getBoard().Split('/');
 
         int tile = 0;
