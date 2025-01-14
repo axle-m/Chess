@@ -199,12 +199,11 @@ public static double getPositionScore(Fen f) {
     double whiteScore = 0;
     double blackScore = 0;
 
-    string board = f.ToString().Split('/')[0];
-    char[] boardCharArray = board.ToCharArray();
+    Tile[] boardCharArray = f.fenToTiles();
 
     for (int i = 0; i < boardCharArray.Length; i++) {
-        if (piece_values.ContainsKey(boardCharArray[i])) {
-            char piece = boardCharArray[i];
+        if (piece_values.ContainsKey(boardCharArray[i].getCurPiece())) {
+            char piece = boardCharArray[i].getCurPiece();
             double[,] positionValues = piecePosition[piece];
 
             int rank = i / 8;

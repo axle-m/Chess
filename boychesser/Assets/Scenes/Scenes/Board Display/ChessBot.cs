@@ -33,31 +33,31 @@ public class ChessBot
     }
 
     public static string GetBestMove(String[] currentLegalMoves, String fenString)
-{
-    double highestValue = double.MinValue;
-    int index = -1;
-
-    // Create the combined scoring function by using both piece and position scoring
-    for (int i = 0; i < currentLegalMoves.Length; i++)
     {
-        Fen moveFen = new Fen(Fen.move(fenString, currentLegalMoves[i]));
-        double score = combinedScoring(moveFen);  // Directly use the combinedScoring
+        double highestValue = double.MinValue;
+        int index = -1;
 
-        if (score > highestValue)
+        // Create the combined scoring function by using both piece and position scoring
+        for (int i = 0; i < currentLegalMoves.Length; i++)
         {
-            highestValue = score;
-            index = i;
+            Fen moveFen = new Fen(Fen.move(fenString, currentLegalMoves[i]));
+            double score = combinedScoring(moveFen);  // Directly use the combinedScoring
+
+            if (score > highestValue)
+            {
+                highestValue = score;
+                index = i;
+            }
         }
+
+        return index >= 0 ? currentLegalMoves[index] : null;
     }
 
-    return index >= 0 ? currentLegalMoves[index] : null;
-}
-
     public static double combinedScoring(Fen fen) {
-    double materialScore = getPieceScoring(fen);
-    double positionScore = getPositionScoring(fen);
-    return materialScore + positionScore; 
-}
+        double materialScore = getPieceScoring(fen);
+        double positionScore = getPositionScoring(fen);
+        return materialScore + positionScore; 
+    }
     public static double getPositionScoring(Fen fen) {
         return Scorer.getPositionScore(fen);
     }
