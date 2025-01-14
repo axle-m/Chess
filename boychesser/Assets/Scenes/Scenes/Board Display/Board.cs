@@ -76,7 +76,7 @@ public class Board : MonoBehaviour
         if (curFen.getActiveColor().Equals(botColor))
         {
             String[] moves = LegalMovesList.getLegalMoves(curFen);
-            curFen = new Fen(Fen.move(curFen.ToString(), ChessBot.randomMove(moves)));
+            curFen = new Fen(Fen.move(curFen.ToString(), ChessBot.playBestMove(moves, curFen.ToString())));
             placePieces();
         }
         else tryMove();
