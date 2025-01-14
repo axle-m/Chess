@@ -171,13 +171,13 @@ public class Scorer : Board {
     double whiteScore = 0;
     double blackScore = 0;
 
-    string board = f.ToString().Split('/')[0];
-    char[] boardCharArray = board.ToCharArray();
+    
+    Tile[] boardCharArray = f.fenToTiles();
 
-    foreach (char c in boardCharArray) {
-        if (piece_values.ContainsKey(char.ToLower(c))) {
-            int pieceScore = piece_values[c];
-            if (char.IsUpper(c)) {
+    foreach (Tile c in boardCharArray) {
+        if (piece_values.ContainsKey(char.ToLower(c.getCurPiece()))) {
+            int pieceScore = piece_values[c.getCurPiece()];
+            if (char.IsUpper(c.getCurPiece())) {
                 whiteScore += pieceScore;
             } else {
                 blackScore += pieceScore;
@@ -202,7 +202,7 @@ public static double getPositionScore(Fen f) {
     Tile[] boardCharArray = f.fenToTiles();
 
     for (int i = 0; i < boardCharArray.Length; i++) {
-        if (piece_values.ContainsKey(boardCharArray[i].getCurPiece())) {
+        if (piece_values.ContainsKey(boardCharArray[i].getPieceType())) {
             char piece = boardCharArray[i].getCurPiece();
             double[,] positionValues = piecePosition[piece];
 
@@ -230,12 +230,13 @@ public static double getPositionScore(Fen f) {
 
 // Helper function to calculate the king's position
 private static int getKingPosition(Fen f, string color) {
-    string board = f.ToString();
+    //string board = f.ToString();
+    Tile[] boardCharArray = f.fenToTiles();
     char kingChar = color == "w" ? 'K' : 'k';
     
     // Find the king's position on the board (it's in the first rank of the FEN)
-    for (int i = 0; i < board.Length; i++) {
-        if (board[i] == kingChar) {
+    for (int i = 0; i < boardCharArray.Length; i++) {
+        if (boardCharArray[i].getCurPiece() == kingChar) {
             return i; // return the index of the king's position in the FEN string
         }
     }
@@ -255,7 +256,7 @@ private static double calculateKingSafety(Fen f, string color) {
         kingPos - 7, kingPos + 7, kingPos - 9, kingPos + 9 // Diagonal squares around the king
     };
 
-    foreach (var square in dangerousSquares) {
+    foreach (var square in dangerousSquares) { //bwoke
         if (square >= 0 && square < 64 && f.getBoard()[square] != '0') {
             // Penalize if there are opposing pieces nearby
             char piece = f.getBoard()[square];
@@ -271,11 +272,11 @@ private static double calculateKingSafety(Fen f, string color) {
 // Helper function to evaluate pawn structure (isolated, passed, etc.)
 private static double evaluatePawnStructure(Fen f, string color) {
     double pawnStructureScore = 0;
-    string board = f.ToString();
-    
+    //string board = f.ToString();
+    Tile[] boardCharArray = f.fenToTiles();
     // Check for isolated pawns
-    for (int i = 0; i < board.Length; i++) {
-        if (board[i] == 'p' || board[i] == 'P') {
+    for (int i = 0; i < boardCharArray.Length; i++) {
+        if (boardCharArray[i].getCurPiece() == 'p' || board[i] == 'P') {
             int rank = i / 8;
             int file = i % 8;
 

@@ -34,7 +34,7 @@ public class ChessBot
 
     public static string GetBestMove(String[] currentLegalMoves, String fenString)
     {
-        double highestValue = double.MinValue;
+        double highestValue = -1000.0;
         int index = -1;
 
         // Create the combined scoring function by using both piece and position scoring
