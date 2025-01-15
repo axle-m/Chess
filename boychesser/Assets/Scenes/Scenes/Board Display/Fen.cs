@@ -329,4 +329,44 @@ public class Fen
 
         return move;    //return literal move for now, will implement other normalisations later
     }
+
+    public string winConditions()
+    {
+        bool white = false;
+        bool black = false;
+        bool pieces = false;
+
+        foreach(char c in getBoard())
+        {
+            if (c == 'K')
+            {
+                white = true;
+            }
+            if (c == 'k')
+            {
+                black = true;
+            }
+            if (c != '0')
+            {
+                pieces = true;
+            }
+        }
+        
+        if(white && black && pieces)
+        {
+            return "continue";
+        }
+        else if (white && !black)
+        {
+            return "white";
+        }
+        else if (!white && black)
+        {
+            return "black";
+        }
+        else
+        {
+            return "draw";
+        }
+    }
 }

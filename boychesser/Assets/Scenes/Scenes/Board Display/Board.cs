@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -50,7 +52,6 @@ public class Board : MonoBehaviour
 
     void Start()
     {
-
         //randomly select bot color
         System.Random random = new System.Random();
         botColor = random.Next(0, 2) == 0 ? "w" : "b";
@@ -70,16 +71,18 @@ public class Board : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log("Active: " + curFen.getActiveColor());
-        Debug.Log("Bot: " + botColor);
+        if (curFen.winConditions().Equals("continue")) {
+            Debug.Log("Active: " + curFen.getActiveColor());
+            Debug.Log("Bot: " + botColor);
 
-        if (curFen.getActiveColor().Equals(botColor))
-        {
-            String[] moves = LegalMovesList.getLegalMoves(curFen);
-            curFen = new Fen(Fen.move(curFen.ToString(), ChessBot.playBestMove(moves, curFen.ToString())));
-            placePieces();
+            if (curFen.getActiveColor().Equals(botColor))
+            {
+                String[] moves = LegalMovesList.getLegalMoves(curFen);
+                curFen = new Fen(Fen.move(curFen.ToString(), ChessBot.playBestMove(moves, curFen.ToString())));
+                placePieces();
+            }
+            else tryMove();
         }
-        else tryMove();
     }
 
     void tryMove()
