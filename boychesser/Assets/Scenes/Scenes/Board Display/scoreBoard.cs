@@ -25,5 +25,7 @@ public class scoreBoard : Board
         else{
             blackScore = Scorer.getPieceScore(curFen);
             }
+        whiteScoreBoard.text = "White Score: " + whiteScore;
+        blackScoreBoard.text = "Black Score: " + blackScore;
     }
 }
