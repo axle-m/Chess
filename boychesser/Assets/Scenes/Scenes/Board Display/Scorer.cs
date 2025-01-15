@@ -272,7 +272,7 @@ public class Scorer : Board {
             char piece = f.fenToTiles()[square].getCurPiece();
             if (square >= 0 && square < 64 && piece != '0') {
                 // Penalize if there are opposing pieces nearby
-                if ((char.IsLower(piece) && color == "w") || (char.IsUpper(piece) && color == "b")) {
+                if (char.IsLower(piece) && color.Equals("b") || (char.IsUpper(piece) && color.Equals("b"))) {
                     safetyScore -= 0.5; // Penalize king for being near an enemy piece
                 }
             }
