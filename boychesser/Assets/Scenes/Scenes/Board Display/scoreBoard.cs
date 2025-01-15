@@ -12,20 +12,22 @@ public class scoreBoard : Board
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        whiteScoreBoard.text = "White Score: " + whiteScore;
-        blackScoreBoard.text = "Black Score: " + blackScore;
+        whiteScoreBoard.text = "Score: " + whiteScore;
+        // blackScoreBoard.text = "Black Score: " + blackScore;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(curFen.getActiveColor() == "w"){
-            whiteScore = Scorer.getPieceScore(curFen);
-            } 
-        else{
-            blackScore = Scorer.getPieceScore(curFen);
-            }
-        whiteScoreBoard.text = "White Score: " + whiteScore;
-        blackScoreBoard.text = "Black Score: " + blackScore;
+        // if(curFen.getActiveColor() == "w"){
+        //     whiteScore = Scorer.getPieceScore(curFen);
+        //     } 
+        // else{
+        //     blackScore = Scorer.getPieceScore(curFen);
+        //     }
+        whiteScore = Scorer.getPieceScore(curFen);
+        whiteScoreBoard.text = "Score: " + whiteScore;
+        // whiteScoreBoard.text = "White Score: " + whiteScore;
+        // blackScoreBoard.text = "Black Score: " + blackScore;
     }
 }
