@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -46,40 +48,35 @@ public class Board : MonoBehaviour
     readonly string[] files = new string[] { "1", "2", "3", "4", "5", "6", "7", "8" };
 
     Tile selectedTile = null;
-    private string botColor;
+    private string botColor = "b";
 
     void Start()
     {
-
         //randomly select bot color
         System.Random random = new System.Random();
-        botColor = random.Next(0, 2) == 0 ? "w" : "b";
+        //botColor = random.Next(0, 2) == 0 ? "w" : "b";
 
         curFen = new Fen(START_FEIN);
 
         CreateGraphicalBoard();
         placePieces();
         PrecomputeMoveData.precomputedMoveData();
-
-        string s = "Testing";
-        Debug.Log(s);
-        s = s.Remove(s.IndexOf('i'), 1);
-        Debug.Log(s);
-
     }
 
     private void Update()
     {
-        Debug.Log("Active: " + curFen.getActiveColor());
-        Debug.Log("Bot: " + botColor);
+        if (curFen.winConditions().Equals("continue")) {
+            Debug.Log("Active: " + curFen.getActiveColor());
+            Debug.Log("Bot: " + botColor);
 
-        if (curFen.getActiveColor().Equals(botColor))
-        {
-            String[] moves = LegalMovesList.getLegalMoves(curFen);
-            curFen = new Fen(Fen.move(curFen.ToString(), ChessBot.randomMove(moves)));
-            placePieces();
+            if (curFen.getActiveColor().Equals(botColor))
+            {
+                String[] moves = LegalMovesList.getLegalMoves(curFen);
+                curFen = new Fen(Fen.move(curFen.ToString(), ChessBot.playBestMove(curFen.ToString())));
+                placePieces();
+            }
+            else tryMove();
         }
-        else tryMove();
     }
 
     void tryMove()

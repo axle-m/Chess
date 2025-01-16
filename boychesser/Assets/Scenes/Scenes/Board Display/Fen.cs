@@ -137,8 +137,6 @@ public class Fen
             {
                 castlingRights = "-";
             }
-
-            Debug.Log(castlingRights);
         }
 
         
@@ -247,7 +245,6 @@ public class Fen
 
         // Update active color
         activeColor = activeColor.Equals("w") ? "b" : "w";
-        Debug.Log(activeColor);
 
         // Update halfmove clock
         if (Char.ToLower(piece) == 'p')
@@ -312,9 +309,6 @@ public class Fen
 
     private static string normaliseMove(string move)    //could also use this to add pgn compatibility
     {
-
-        Debug.Log(move);
-
         if (char.ToLower(move[0]) == 'k')
         {
             if (move.Equals("Ke1g1") || move.Equals("Ke8g8"))
@@ -328,5 +322,45 @@ public class Fen
         }
 
         return move;    //return literal move for now, will implement other normalisations later
+    }
+
+    public string winConditions()
+    {
+        bool white = false;
+        bool black = false;
+        bool pieces = false;
+
+        foreach(char c in getBoard())
+        {
+            if (c == 'K')
+            {
+                white = true;
+            }
+            if (c == 'k')
+            {
+                black = true;
+            }
+            if (c != '0')
+            {
+                pieces = true;
+            }
+        }
+        
+        if(white && black && pieces)
+        {
+            return "continue";
+        }
+        else if (white && !black)
+        {
+            return "white";
+        }
+        else if (!white && black)
+        {
+            return "black";
+        }
+        else
+        {
+            return "draw";
+        }
     }
 }
