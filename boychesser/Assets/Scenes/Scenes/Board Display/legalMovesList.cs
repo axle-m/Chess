@@ -197,8 +197,6 @@ public class LegalMovesList
 
         legalMoves = moves.ToArray();
 
-        Debug.Log(legalMoves.Count());
-
         return legalMoves;
 
     }

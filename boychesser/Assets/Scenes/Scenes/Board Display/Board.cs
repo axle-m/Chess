@@ -61,12 +61,6 @@ public class Board : MonoBehaviour
         CreateGraphicalBoard();
         placePieces();
         PrecomputeMoveData.precomputedMoveData();
-
-        string s = "Testing";
-        Debug.Log(s);
-        s = s.Remove(s.IndexOf('i'), 1);
-        Debug.Log(s);
-
     }
 
     private void Update()

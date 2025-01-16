@@ -17,7 +17,7 @@ public class ChessBot
      * although i did modify the other method signatures to take in a string array instead of a LegalMovesList object and a fen string to describe a board
      */
 
-    private static int depth = 2; // start at a low depth for now
+    private static int depth = 3; // start at a low depth for now
 
     void Start()
     {
@@ -39,7 +39,7 @@ public class ChessBot
         // Base case: terminal state or depth is 0
         if (depth == 0)
         {
-            return combinedScoring(fen);
+            return -combinedScoring(fen);
         }
 
         double max = Double.NegativeInfinity;
@@ -73,17 +73,13 @@ public class ChessBot
         int bestMoveIndex = 0;
         for(int i = 0; i < evalMoves.Count; i++)
         {
-            if (Double.Parse(evalMoves[i][1]) > Double.Parse(evalMoves[bestMoveIndex][1]) && active == 1){
-                bestMoveIndex = i;
-            }
-            else if (Double.Parse(evalMoves[i][1]) < Double.Parse(evalMoves[bestMoveIndex][1]) && active == -1)
-            {
+            if (Double.Parse(evalMoves[i][1]) > Double.Parse(evalMoves[bestMoveIndex][1])){
                 bestMoveIndex = i;
             }
         }
         double currentPosEval = combinedScoring(f);
-        Debug.Log("Current board state: " + currentPosEval);
-        Debug.Log($"Best move: {moves[bestMoveIndex]} with score {evalMoves[bestMoveIndex][1]}");
+        //Debug.Log("Current board state: " + currentPosEval);
+        //Debug.Log($"Best move: {moves[bestMoveIndex]} with score {evalMoves[bestMoveIndex][1]}");
         return moves[bestMoveIndex];
     }
 

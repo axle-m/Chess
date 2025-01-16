@@ -137,8 +137,6 @@ public class Fen
             {
                 castlingRights = "-";
             }
-
-            Debug.Log(castlingRights);
         }
 
         
@@ -247,7 +245,6 @@ public class Fen
 
         // Update active color
         activeColor = activeColor.Equals("w") ? "b" : "w";
-        Debug.Log(activeColor);
 
         // Update halfmove clock
         if (Char.ToLower(piece) == 'p')

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -203,6 +204,9 @@ public class Scorer : Board {
     public static double getPositionScore(Fen f) {
         double whiteScore = 0;
         double blackScore = 0;
+
+        Random rand = new Random();
+        double offset = rand.NextDouble() * 0.1 - 0.05; // Random offset to avoid ties
 
         Tile[] boardCharArray = f.fenToTiles();
 
