@@ -17,7 +17,7 @@ public class ChessBot
      * although i did modify the other method signatures to take in a string array instead of a LegalMovesList object and a fen string to describe a board
      */
 
-    private static int depth = 3; // start at a low depth for now
+    private static int depth = 2; // start at a low depth for now
 
     void Start()
     {
