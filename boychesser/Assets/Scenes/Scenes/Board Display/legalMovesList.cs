@@ -9,9 +9,9 @@ using Unity.VisualScripting;
 public class LegalMovesList
 {
 
-    static readonly int[] knight_moves = { 15, 17, 10, 6, -15, -17, -10, -6 };
-    static readonly int[] king_moves = { 1, -1, 8, -8, 9, 7, -9, -7 };
-    static readonly int[] pawn_captures = { 7, 9 };
+    public static readonly int[] knight_moves = { 15, 17, 10, 6, -15, -17, -10, -6 };
+    public static readonly int[] king_moves = { 1, -1, 8, -8, 9, 7, -9, -7 };
+    public static readonly int[] pawn_captures = { 7, 9 };
 
     static String[] legalMoves;
 
@@ -88,7 +88,6 @@ public class LegalMovesList
                                     string s = "K" + tiles[start].getName() + tiles[destinationIndex].getName();
                                     moves.Add(s);
                                     tiles[destinationIndex].setLegalMove(true);
-
                                 }
                             }
                         }
@@ -102,6 +101,7 @@ public class LegalMovesList
                     {
                         if (c == 'K' && tiles[5].getPieceType() == '0' && tiles[6].getPieceType() == '0' && !putsInCheck(5, tiles) && !putsInCheck(6, tiles))
                         {
+                            if (fen.getActiveColor().Equals("b")) break;
                             string s = "K" + tiles[start].getName() + tiles[6].getName();
                             moves.Add(s);
                             tiles[6].setLegalMove(true);
@@ -109,6 +109,7 @@ public class LegalMovesList
                         }
                         if (c == 'Q' && tiles[1].getPieceType() == '0' && tiles[2].getPieceType() == '0' && tiles[3].getPieceType() == '0' && !putsInCheck(2, tiles) && !putsInCheck(3, tiles))
                         {
+                            if (fen.getActiveColor().Equals("b")) break;
                             string s = "K" + tiles[start].getName() + tiles[2].getName();
                             moves.Add(s);
                             tiles[2].setLegalMove(true);
@@ -116,6 +117,7 @@ public class LegalMovesList
                         }
                         if (c == 'k' && tiles[61].getPieceType() == '0' && tiles[62].getPieceType() == '0' && !putsInCheck(61, tiles) && !putsInCheck(62, tiles))
                         {
+                            if (fen.getActiveColor().Equals("w")) break;
                             string s = "K" + tiles[start].getName() + tiles[62].getName();
                             moves.Add(s);
                             tiles[62].setLegalMove(true);
@@ -123,6 +125,7 @@ public class LegalMovesList
                         }
                         if (c == 'q' && tiles[57].getPieceType() == '0' && tiles[58].getPieceType() == '0' && tiles[59].getPieceType() == '0' && !putsInCheck(58, tiles) && !putsInCheck(59, tiles))
                         {
+                            if (fen.getActiveColor().Equals("w")) break;
                             string s = "K" + tiles[start].getName() + tiles[58].getName();
                             moves.Add(s);
                             tiles[58].setLegalMove(true);
@@ -194,8 +197,6 @@ public class LegalMovesList
 
         legalMoves = moves.ToArray();
 
-        Debug.Log(legalMoves.Count());
-
         return legalMoves;
 
     }
@@ -222,7 +223,7 @@ public class LegalMovesList
         {
 
             // iterate over all possible moves in the direction
-            for(int n = 0; n <= PrecomputeMoveData.numSquaresToEdge[tile.index][dirIndex]; n++)
+            for(int n = 0; n < PrecomputeMoveData.numSquaresToEdge[tile.index][dirIndex]; n++)
             {
                 int destinationIndex = tile.index + PrecomputeMoveData.cardinal_moves[dirIndex] * (n + 1);
 

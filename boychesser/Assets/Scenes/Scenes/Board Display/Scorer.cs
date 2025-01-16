@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -43,7 +44,6 @@ public class Scorer : Board {
                                              {-1, 0.5, 0.5, 0.5, 0.5, 0.5, 0, -1},
                                              {-1, 0, 0.5, 0, 0, 0, 0, -1},
                                              {-2, -1, -1, -0.5, -0.5, -1, -1, -2}};
-
 
     static double[,] whiteRookPos = new double[,] {{0, 0, 0, 0.5, 0.5, 0, 0,0},
                                             {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
@@ -121,7 +121,7 @@ public class Scorer : Board {
 
     static readonly Dictionary<char, int> piece_values = new Dictionary<char, int>
     {
-        { 'k', 256 },   //give king arbitrarily high value to ensure any position in which a side can capture a king is always chosen
+        { 'k', 512 },   //give king arbitrarily high value to ensure any position in which a side can capture a king is always chosen
         { 'q', 9 }, 
         { 'r', 5 }, 
         { 'b', 3 },     //bishop and knight are both 3, may change bishop to be a little higher later for accuracy
@@ -131,8 +131,6 @@ public class Scorer : Board {
 
     static readonly Dictionary<char, double[,]> piecePosition = new Dictionary<char, double[,]>
     {
-
-
         { 'k', blackKingPos },   
         { 'q', blackQueenPos }, 
         { 'r', blackRookPos }, 
@@ -145,9 +143,196 @@ public class Scorer : Board {
         { 'B', whiteBishopPos },     
         { 'N', whiteKnightPos }, 
         { 'P', whitePawnPos }
-    };    
+    };
+    public static bool isEndgame(Fen f)
+    { //figures out if it's the endgame or not
+      // Count the number of pieces on the board for each color
+        int whitePieceCount = 0;
+        int blackPieceCount = 0;
 
-    public static double getPieceScore(Fen f){
+        string board = f.ToString().Split(' ')[0];  // Board is the first part of the FEN
+        foreach (char c in board)
+        {
+            if (char.IsDigit(c))
+            {
+                continue;
+            }
+            if (char.IsUpper(c))
+            {
+                whitePieceCount++;
+            }
+            else if (char.IsLower(c))
+            {
+                blackPieceCount++;
+            }
+        }
+
+        // If both players have fewer than 12 pieces, it's likely an endgame
+        // If neither condition is met, it's not considered an endgame
+        return (whitePieceCount < 12 && blackPieceCount < 12);
+    }
+
+    public static double getPieceScore(Fen f) {
+        double whiteScore = 0;
+        double blackScore = 0;
+
+        string board = f.ToString().Split(' ')[0];
+        
+        foreach (char c in board) {
+            if (piece_values.ContainsKey(char.ToLower(c))) {
+                int pieceScore = piece_values[char.ToLower(c)];
+                if (char.IsUpper(c))
+                {
+                    whiteScore += pieceScore;
+                } else 
+                {
+                    blackScore += pieceScore;
+                }
+            }
+        }
+
+        // Example: Adjust score for endgame/early game.
+        /*if (isEndgame(f)) {
+            // In the endgame, kings and pawns are more important
+            whiteScore += calculateKingSafety(f, "w");
+            blackScore += calculateKingSafety(f, "b");
+        }*/
+
+        return (f.getActiveColor().Equals("w")) ? whiteScore - blackScore : blackScore - whiteScore;
+    }
+
+    public static double getPositionScore(Fen f) {
+        double whiteScore = 0;
+        double blackScore = 0;
+
+        Random rand = new Random();
+        double offset = rand.NextDouble() * 0.1 - 0.05; // Random offset to avoid ties
+
+        Tile[] boardCharArray = f.fenToTiles();
+
+        for (int i = 0; i < boardCharArray.Length; i++) {
+            if (piece_values.ContainsKey(boardCharArray[i].getPieceType())) {
+                char piece = boardCharArray[i].getCurPiece();
+                double[,] positionValues = piecePosition[piece];
+
+                int rank = i / 8;
+                int file = i % 8;
+
+                if (char.IsUpper(piece)) {
+                    // For white pieces, consider their position
+                    whiteScore += piece_values[char.ToLower(piece)] + positionValues[rank, file];
+                } else {
+                    // For black pieces, consider their position
+                    blackScore += piece_values[piece] + positionValues[rank, file];
+                }
+
+                // Pawn structure evaluation (e.g., isolated or passed pawns)
+                if (piece == 'p' || piece == 'P') {
+                    whiteScore += evaluatePawnStructure(f, "w");
+                    blackScore += evaluatePawnStructure(f, "b");
+                }
+            }
+        }
+
+        return (f.getActiveColor().Equals("w")) ? whiteScore - blackScore : blackScore - whiteScore;
+    }
+
+// Helper function to calculate the king's position
+    private static int getKingPosition(Fen f, string color) {
+        //string board = f.ToString();
+        Tile[] boardCharArray = f.fenToTiles();
+        char kingChar = color == "w" ? 'K' : 'k';
+    
+        // Find the king's position on the board (it's in the first rank of the FEN)
+        for (int i = 0; i < boardCharArray.Length; i++) {
+            if (boardCharArray[i].getCurPiece() == kingChar) {
+                return i; // return the index of the king's position in the FEN string
+            }
+        }
+        return -1; // King not found, handle this case as needed
+    }
+
+    private static double calculateKingSafety(Fen f, string color) {
+        int kingPos = getKingPosition(f, color);
+        double safetyScore = 0;
+
+        if (kingPos == -1) {
+            return safetyScore; // Return 0 if king not found, though this should not happen
+        }
+
+        /*int[] dangerousSquares = new int[] { // Example of squares that can be considered dangerous
+            kingPos - 8, kingPos + 8, kingPos - 1, kingPos + 1, // Direct squares around the king
+            kingPos - 7, kingPos + 7, kingPos - 9, kingPos + 9 // Diagonal squares around the king
+        };*/
+        int[] dangerousSquares;
+        List<int> dangerousMoves = new List<int>();
+        foreach (int move in LegalMovesList.king_moves)
+        {           
+            if(kingPos + move >= 0 && kingPos + move < 64)
+            {
+                dangerousMoves.Add(kingPos + move);
+            }
+        }
+        dangerousSquares = dangerousMoves.ToArray();
+
+        foreach (var square in dangerousSquares) { //bwoke
+            char piece = f.fenToTiles()[square].getCurPiece();
+            if (square >= 0 && square < 64 && piece != '0') {
+                // Penalize if there are opposing pieces nearby
+                if (char.IsLower(piece) && color.Equals("b") || (char.IsUpper(piece) && color.Equals("b"))) {
+                    safetyScore -= 0.5; // Penalize king for being near an enemy piece
+                }
+            }
+        }
+
+        return safetyScore;
+    }
+
+    // Helper function to evaluate pawn structure (isolated, passed, etc.)
+    private static double evaluatePawnStructure(Fen f, string color) {
+        double pawnStructureScore = 0;
+        //string board = f.ToString();
+        Tile[] boardCharArray = f.fenToTiles();
+        // Check for isolated pawns
+        for (int i = 0; i < boardCharArray.Length; i++) {
+            if (boardCharArray[i].getCurPiece() == 'p' || boardCharArray[i].getCurPiece() == 'P') {
+                int rank = i / 8;
+                int file = i % 8;
+
+                bool isIsolated = true;
+                if (color == "w" && i > 0 && i < boardCharArray.Length - 1) {
+                    if ((boardCharArray[i - 1].getCurPiece() == 'P' || boardCharArray[i + 1].getCurPiece() == 'P')) {
+                        isIsolated = false;
+                    }
+                }
+                if (color == "b" && i > 0 && i < boardCharArray.Length - 1) {
+                    if ((boardCharArray[i - 1].getCurPiece() == 'p' || boardCharArray[i + 1].getCurPiece() == 'p')) {
+                        isIsolated = false;
+                    }
+                }
+
+                if (isIsolated) {
+                    pawnStructureScore -= 0.5; // Isolated pawns should be penalized
+                }
+
+                // Check for passed pawns: no opposing pawns can be on the same or adjacent files
+                bool isPassed = true;
+                for (int j = 0; j < 8; j++) {
+                    if (color == "w" && (boardCharArray[j * 8 + rank].getCurPiece() == 'p' || boardCharArray[j * 8 + rank].getCurPiece() == 'P')) {
+                        isPassed = false;
+                    }
+                }
+                if (isPassed) {
+                    pawnStructureScore += 0.5; // Passed pawns should be rewarded
+                }
+            }
+        }
+
+        return pawnStructureScore;
+    }
+
+
+    /* public static double getPieceScore(Fen f){
         //This only takes account the amount of pieces each player has
         double whiteScore = 0;
         double blackScore = 0;
@@ -190,129 +375,5 @@ public class Scorer : Board {
         }
         return (f.getActiveColor() == "w") ? whiteScore - blackScore : blackScore - whiteScore;
     }
-
-        /*int whiteScore = 0;
-        int blackScore = 0;
-        int i = 0;
-        while(curFen[i] != ' '){
-            if(char.IsLetter(curFen[i])){
-                if(curFen[i] == 'K'){
-                    whiteScore +=90;
-                    i++;
-                }
-                if(curFen[i] == 'Q'){
-                    whiteScore +=9;
-                    i++;
-                }
-                else if(curFen[i] == 'R'){
-                    whiteScore +=5;
-                    i++;
-                }
-                else if(curFen[i] == 'B'){
-                    whiteScore +=3;
-                    i++;
-                }
-                else if(curFen[i] == 'N'){
-                    whiteScore +=3;
-                    i++;
-                }
-                else if(curFen[i] == 'P'){
-                    whiteScore +=1;
-                }
-                if(curFen[i] == 'k'){
-                    whiteScore +=90;
-                    i++;
-                }
-                else if(curFen[i] == 'q'){
-                    blackScore +=9;
-                    i++;
-                }
-                else if(curFen[i] == 'r'){
-                    blackScore +=5;
-                    i++;
-                }
-                else if(curFen[i] == 'b'){
-                    blackScore +=3;
-                    i++;
-                }
-                else if(curFen[i] == 'n'){
-                    blackScore +=3;
-                    i++;
-                }
-                else if(curFen[i] == 'p'){
-                    blackScore +=1;
-                    i++;
-                }                                                                
-            else{
-                i++;
-            }
-            }
-        
-        return whiteScore - blackScore;*/
-    
-
-        //var fenList = new ArrayList();
-        
-        /* foreach (char c in fenArr)
-        {
-            if (char.IsLetter(c))
-            {
-                fenList.Add(c);
-            }
-        }
-        foreach (char c in fenList)
-        {
-            if (char.IsUpper(c))
-            {
-
-            }
-            else if (!char.IsUpper(c))
-            {
-
-            }
-        }
-        
-        return 0;     THAT WAS KAI'S EDIT, BUT GABE AND MAX DIDN'T LIKE IT
-        */ 
-        
-        /*
-        int score = 0;
-        if(ActiveColor != 'w' && ActiveColor != 'b')
-        {
-            throw new System.Exception("illegal fen string");
-        }
-        if(ActiveColor == 'w')
-        {
-            foreach (string c in curFen)
-            {
-                switch (c)
-                {
-                    case 'q':
-                        score += qScore;
-                        break;
-                    case 'r':
-                        score += rScore;
-                        break;
-                    case 'b':
-                        score += bScore;
-                        break;
-                    case 'n':
-                        score += nScore;
-                        break;
-                    case 'p':
-                        score += pScore;
-                        break;
-                }
-            }
-            return ' ';
-        }
-        else if(ActiveColor == 'b')
-        {
-            return ' ';
-        }
-        else
-        {
-            return ' ';
-        }
-        */
+    */
 }
