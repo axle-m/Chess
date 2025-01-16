@@ -166,8 +166,6 @@ public class Scorer : Board {
                 }
             }
         }
-        print(whiteScore);
-        print(blackScore);
         return (f.getActiveColor() == "w") ? (whiteScore - blackScore) : (blackScore - whiteScore);
     }
         
