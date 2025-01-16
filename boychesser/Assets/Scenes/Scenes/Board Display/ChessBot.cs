@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.PlasticSCM.Editor.WebApi;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ public class ChessBot
      * although i did modify the other method signatures to take in a string array instead of a LegalMovesList object and a fen string to describe a board
      */
 
-    private static int depth = 3; // start at a low depth for now
+    private static int depth = 2; // start at a low depth for now
 
     void Start()
     {
@@ -33,51 +34,58 @@ public class ChessBot
         return move;  
     }
 
-    public static string[] recursiveMoves(Fen f, int depth)
+    public static double Negamax(Fen fen, int depth)
     {
-        List<string[]> moves = new List<string[]>(); // list of moves along with eval
-        foreach (string move in LegalMovesList.getLegalMoves(f))
+        // Base case: terminal state or depth is 0
+        if (depth == 0)
         {
-            if (depth != 0) 
-            {
-
-                Fen newFen = new Fen(Fen.move(f.ToString(), move));
-                recursiveMoves(newFen, depth - 1);
-            }
-            else
-            {
-                moves.Add(new string[] { move, combinedScoring(f).ToString() });
-            }
+            return combinedScoring(fen);
         }
 
-        //find best position out of provided
-        double bestEval = -4096.0;
-        int indexOfBest = 0;
+        double max = Double.NegativeInfinity;
 
-        for(int i = 0; i < moves.Count; i++)
+        string[] moves = LegalMovesList.getLegalMoves(fen);
+        foreach(string move in moves)
         {
-            if (Convert.ToDouble(moves[i][1]) > bestEval)
+            Fen newBoardPos = new Fen(Fen.move(fen.ToString(), move));
+            double score = -Negamax(newBoardPos, depth - 1);
+            if (score > max)
             {
-                bestEval = Convert.ToDouble(moves[i][1]);
+                max = score;
             }
         }
-
-        return moves[indexOfBest];
+        return max;
     }
-
+    
     public static string GetBestMove(String fenString)
     {
-       
         Fen f = new Fen(fenString);
-        string move = recursiveMoves(f, depth)[0];
+        int active = f.getActiveColor().Equals("w") ? 1 : -1;
+        string[] moves = LegalMovesList.getLegalMoves(f);
+        List<string[]> evalMoves = new List<string[]>();
+        foreach (string move in moves)
+        {
+            double eval = Negamax(f, depth);
+            evalMoves.Add(new string[] { move, eval.ToString() });
+        }
 
-        return move;
+        int bestMoveIndex = 0;
+        for(int i = 0; i < evalMoves.Count; i++)
+        {
+            if (active * Double.Parse(evalMoves[i][1]) > Double.Parse(evalMoves[bestMoveIndex][1])){
+                bestMoveIndex = i;
+            }
+        }
+        double currentPosEval = combinedScoring(f);
+        Debug.Log("Current board state: " + currentPosEval);
+        Debug.Log($"Best move: {moves[bestMoveIndex]} with score {evalMoves[bestMoveIndex][1]}");
+        return moves[bestMoveIndex];
     }
 
     public static double combinedScoring(Fen fen) {
         double materialScore = getPieceScoring(fen);
-        double positionScore = getPositionScoring(fen);
-        return materialScore + positionScore; 
+        //double positionScore = getPositionScoring(fen);
+        return materialScore;// + positionScore; 
     }
     public static double getPositionScoring(Fen fen) {
         return Scorer.getPositionScore(fen);

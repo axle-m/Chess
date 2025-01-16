@@ -312,9 +312,6 @@ public class Fen
 
     private static string normaliseMove(string move)    //could also use this to add pgn compatibility
     {
-
-        Debug.Log(move);
-
         if (char.ToLower(move[0]) == 'k')
         {
             if (move.Equals("Ke1g1") || move.Equals("Ke8g8"))

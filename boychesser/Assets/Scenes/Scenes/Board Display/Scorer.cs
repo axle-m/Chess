@@ -142,22 +142,25 @@ public class Scorer : Board {
         { 'B', whiteBishopPos },     
         { 'N', whiteKnightPos }, 
         { 'P', whitePawnPos }
-    };    
-    public static bool isEndgame(Fen f) { //figures out if it's the endgame or not
-    // Count the number of pieces on the board for each color
+    };
+    public static bool isEndgame(Fen f)
+    { //figures out if it's the endgame or not
+      // Count the number of pieces on the board for each color
         int whitePieceCount = 0;
         int blackPieceCount = 0;
 
-        string board = f.ToString().Split('/')[0];  // Board is the first part of the FEN
-        foreach (char c in board) {
-            if(char.IsDigit(c))
+        string board = f.ToString().Split(' ')[0];  // Board is the first part of the FEN
+        foreach (char c in board)
+        {
+            if (char.IsDigit(c))
             {
                 continue;
             }
-            if (char.IsUpper(c)) 
+            if (char.IsUpper(c))
             {
                 whitePieceCount++;
-            } else if (char.IsLower(c))
+            }
+            else if (char.IsLower(c))
             {
                 blackPieceCount++;
             }
@@ -165,19 +168,19 @@ public class Scorer : Board {
 
         // If both players have fewer than 12 pieces, it's likely an endgame
         // If neither condition is met, it's not considered an endgame
-        return (whitePieceCount < 12 && blackPieceCount < 12); 
-}
+        return (whitePieceCount < 12 && blackPieceCount < 12);
+    }
+
     public static double getPieceScore(Fen f) {
         double whiteScore = 0;
         double blackScore = 0;
 
-    
-        Tile[] boardCharArray = f.fenToTiles();
-
-        foreach (Tile c in boardCharArray) {
-            if (piece_values.ContainsKey(c.getPieceType())) {
-                int pieceScore = piece_values[c.getPieceType()];
-                if (char.IsUpper(c.getCurPiece())) 
+        string board = f.ToString().Split(' ')[0];
+        
+        foreach (char c in board) {
+            if (piece_values.ContainsKey(char.ToLower(c))) {
+                int pieceScore = piece_values[char.ToLower(c)];
+                if (char.IsUpper(c))
                 {
                     whiteScore += pieceScore;
                 } else 
@@ -188,13 +191,13 @@ public class Scorer : Board {
         }
 
         // Example: Adjust score for endgame/early game.
-        if (isEndgame(f)) {
+        /*if (isEndgame(f)) {
             // In the endgame, kings and pawns are more important
             whiteScore += calculateKingSafety(f, "w");
             blackScore += calculateKingSafety(f, "b");
-        }
+        }*/
 
-        return (f.getActiveColor() == "w") ? whiteScore - blackScore : blackScore - whiteScore;
+        return (f.getActiveColor().Equals("w")) ? whiteScore - blackScore : blackScore - whiteScore;
     }
 
     public static double getPositionScore(Fen f) {
@@ -227,7 +230,7 @@ public class Scorer : Board {
             }
         }
 
-        return (f.getActiveColor() == "w") ? whiteScore - blackScore : blackScore - whiteScore;
+        return (f.getActiveColor().Equals("w")) ? whiteScore - blackScore : blackScore - whiteScore;
     }
 
 // Helper function to calculate the king's position
