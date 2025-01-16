@@ -48,13 +48,13 @@ public class Board : MonoBehaviour
     readonly string[] files = new string[] { "1", "2", "3", "4", "5", "6", "7", "8" };
 
     Tile selectedTile = null;
-    private string botColor;
+    private string botColor = "b";
 
     void Start()
     {
         //randomly select bot color
         System.Random random = new System.Random();
-        botColor = random.Next(0, 2) == 0 ? "w" : "b";
+        //botColor = random.Next(0, 2) == 0 ? "w" : "b";
 
         curFen = new Fen(START_FEIN);
 

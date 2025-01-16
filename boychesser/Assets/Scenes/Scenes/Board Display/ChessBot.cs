@@ -65,14 +65,19 @@ public class ChessBot
         List<string[]> evalMoves = new List<string[]>();
         foreach (string move in moves)
         {
-            double eval = Negamax(f, depth);
+            Fen newBoardPos = new Fen(Fen.move(f.ToString(), move));
+            double eval = Negamax(newBoardPos, depth);
             evalMoves.Add(new string[] { move, eval.ToString() });
         }
 
         int bestMoveIndex = 0;
         for(int i = 0; i < evalMoves.Count; i++)
         {
-            if (active * Double.Parse(evalMoves[i][1]) > Double.Parse(evalMoves[bestMoveIndex][1])){
+            if (Double.Parse(evalMoves[i][1]) > Double.Parse(evalMoves[bestMoveIndex][1]) && active == 1){
+                bestMoveIndex = i;
+            }
+            else if (Double.Parse(evalMoves[i][1]) < Double.Parse(evalMoves[bestMoveIndex][1]) && active == -1)
+            {
                 bestMoveIndex = i;
             }
         }
