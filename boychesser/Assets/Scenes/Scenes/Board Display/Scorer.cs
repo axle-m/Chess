@@ -147,195 +147,7 @@ public class Scorer : Board {
         { 'P', whitePawnPos }
     };    
 
-<<<<<<< Updated upstream
     public static double getPieceScore(Fen f){
-=======
-        string board = f.ToString().Split(' ')[0];  // Board is the first part of the FEN
-        foreach (char c in board)
-        {
-            if (char.IsDigit(c))
-            {
-                continue;
-            }
-            if (char.IsUpper(c))
-            {
-                whitePieceCount++;
-            }
-            else if (char.IsLower(c))
-            {
-                blackPieceCount++;
-            }
-        }
-
-        // If both players have fewer than 12 pieces, it's likely an endgame
-        // If neither condition is met, it's not considered an endgame
-        return (whitePieceCount < 12 && blackPieceCount < 12);
-    }
-
-    public static double getPieceScore(Fen f) {
-        double whiteScore = 0;
-        double blackScore = 0;
-
-        string board = f.ToString().Split(' ')[0];
-        System.Random random = new System.Random();
-        double offset = random.NextDouble() * 0.1 - 0.05; // Random offset to avoid ties
-
-        foreach (char c in board) {
-            if (piece_values.ContainsKey(char.ToLower(c))) {
-                int pieceScore = piece_values[char.ToLower(c)];
-                if (char.IsUpper(c))
-                {
-                    whiteScore += pieceScore;
-                } else 
-                {
-                    blackScore += pieceScore;
-                }
-            }
-        }
-
-        // Example: Adjust score for endgame/early game.
-        /*if (isEndgame(f)) {
-            // In the endgame, kings and pawns are more important
-            whiteScore += calculateKingSafety(f, "w");
-            blackScore += calculateKingSafety(f, "b");
-        }*/
-
-        return (f.getActiveColor().Equals("w")) ? whiteScore - blackScore + offset : blackScore - whiteScore + offset;
-    }
-
-    public static double getPositionScore(Fen f) {
-        double whiteScore = 0;
-        double blackScore = 0;
-
-        Random rand = new Random();
-        double offset = rand.NextDouble() * 0.1 - 0.05; // Random offset to avoid ties
-
-        Tile[] boardCharArray = f.fenToTiles();
-
-        for (int i = 0; i < boardCharArray.Length; i++) {
-            if (piece_values.ContainsKey(boardCharArray[i].getPieceType())) {
-                char piece = boardCharArray[i].getCurPiece();
-                double[,] positionValues = piecePosition[piece];
-
-                int rank = i / 8;
-                int file = i % 8;
-
-                if (char.IsUpper(piece)) {
-                    // For white pieces, consider their position
-                    whiteScore += piece_values[char.ToLower(piece)] + positionValues[rank, file];
-                } else {
-                    // For black pieces, consider their position
-                    blackScore += piece_values[piece] + positionValues[rank, file];
-                }
-
-                // Pawn structure evaluation (e.g., isolated or passed pawns)
-                if (piece == 'p' || piece == 'P') {
-                    whiteScore += evaluatePawnStructure(f, "w");
-                    blackScore += evaluatePawnStructure(f, "b");
-                }
-            }
-        }
-
-        return (f.getActiveColor().Equals("w")) ? whiteScore - blackScore : blackScore - whiteScore;
-    }
-
-// Helper function to calculate the king's position
-    private static int getKingPosition(Fen f, string color) {
-        //string board = f.ToString();
-        Tile[] boardCharArray = f.fenToTiles();
-        char kingChar = color == "w" ? 'K' : 'k';
-    
-        // Find the king's position on the board (it's in the first rank of the FEN)
-        for (int i = 0; i < boardCharArray.Length; i++) {
-            if (boardCharArray[i].getCurPiece() == kingChar) {
-                return i; // return the index of the king's position in the FEN string
-            }
-        }
-        return -1; // King not found, handle this case as needed
-    }
-
-    private static double calculateKingSafety(Fen f, string color) {
-        int kingPos = getKingPosition(f, color);
-        double safetyScore = 0;
-
-        if (kingPos == -1) {
-            return safetyScore; // Return 0 if king not found, though this should not happen
-        }
-
-        /*int[] dangerousSquares = new int[] { // Example of squares that can be considered dangerous
-            kingPos - 8, kingPos + 8, kingPos - 1, kingPos + 1, // Direct squares around the king
-            kingPos - 7, kingPos + 7, kingPos - 9, kingPos + 9 // Diagonal squares around the king
-        };*/
-        int[] dangerousSquares;
-        List<int> dangerousMoves = new List<int>();
-        foreach (int move in LegalMovesList.king_moves)
-        {           
-            if(kingPos + move >= 0 && kingPos + move < 64)
-            {
-                dangerousMoves.Add(kingPos + move);
-            }
-        }
-        dangerousSquares = dangerousMoves.ToArray();
-
-        foreach (var square in dangerousSquares) { //bwoke
-            char piece = f.fenToTiles()[square].getCurPiece();
-            if (square >= 0 && square < 64 && piece != '0') {
-                // Penalize if there are opposing pieces nearby
-                if (char.IsLower(piece) && color.Equals("b") || (char.IsUpper(piece) && color.Equals("b"))) {
-                    safetyScore -= 0.5; // Penalize king for being near an enemy piece
-                }
-            }
-        }
-
-        return safetyScore;
-    }
-
-    // Helper function to evaluate pawn structure (isolated, passed, etc.)
-    private static double evaluatePawnStructure(Fen f, string color) {
-        double pawnStructureScore = 0;
-        //string board = f.ToString();
-        Tile[] boardCharArray = f.fenToTiles();
-        // Check for isolated pawns
-        for (int i = 0; i < boardCharArray.Length; i++) {
-            if (boardCharArray[i].getCurPiece() == 'p' || boardCharArray[i].getCurPiece() == 'P') {
-                int rank = i / 8;
-                int file = i % 8;
-
-                bool isIsolated = true;
-                if (color == "w" && i > 0 && i < boardCharArray.Length - 1) {
-                    if ((boardCharArray[i - 1].getCurPiece() == 'P' || boardCharArray[i + 1].getCurPiece() == 'P')) {
-                        isIsolated = false;
-                    }
-                }
-                if (color == "b" && i > 0 && i < boardCharArray.Length - 1) {
-                    if ((boardCharArray[i - 1].getCurPiece() == 'p' || boardCharArray[i + 1].getCurPiece() == 'p')) {
-                        isIsolated = false;
-                    }
-                }
-
-                if (isIsolated) {
-                    pawnStructureScore -= 0.5; // Isolated pawns should be penalized
-                }
-
-                // Check for passed pawns: no opposing pawns can be on the same or adjacent files
-                bool isPassed = true;
-                for (int j = 0; j < 8; j++) {
-                    if (color == "w" && (boardCharArray[j * 8 + rank].getCurPiece() == 'p' || boardCharArray[j * 8 + rank].getCurPiece() == 'P')) {
-                        isPassed = false;
-                    }
-                }
-                if (isPassed) {
-                    pawnStructureScore += 0.5; // Passed pawns should be rewarded
-                }
-            }
-        }
-
-        return pawnStructureScore;
-    }
-
-
-    /* public static double getPieceScore(Fen f){
->>>>>>> Stashed changes
         //This only takes account the amount of pieces each player has
         double whiteScore = 0;
         double blackScore = 0;
@@ -354,6 +166,8 @@ public class Scorer : Board {
                 }
             }
         }
+        print(whiteScore);
+        print(blackScore);
         return (f.getActiveColor() == "w") ? (whiteScore - blackScore) : (blackScore - whiteScore);
     }
         
@@ -362,21 +176,20 @@ public class Scorer : Board {
         double whiteScore = 0;
         double blackScore = 0;
 
-        string board = f.ToString().Split('/')[0];
-        char[] boardCharArray = board.ToCharArray();
-        for(int i = 0; i < boardCharArray.Length; i++){
-            if (piece_values.ContainsKey(boardCharArray[i])){
-                if(char.IsUpper(boardCharArray[i])){
-                    double[,] positionValues = piecePosition[boardCharArray[i]];
-                    whiteScore += piece_values[boardCharArray[i]] + positionValues[(int)i/8, i%8];
+        Tile[] boardArray = f.fenToTiles();
+        for(int i = 0; i < boardArray.Length; i++){
+            if (piece_values.ContainsKey(boardArray[i].getPieceType())){
+                if(char.IsUpper(boardArray[i].getCurPiece())){
+                    double[,] positionValues = piecePosition[boardArray[i].getCurPiece()];
+                    whiteScore += piece_values[boardArray[i].getPieceType()] + positionValues[(int)i/8, i%8];
                 }
                 else{
-                    double[,] positionValues = piecePosition[boardCharArray[i]];
-                    blackScore += piece_values[boardCharArray[i]] + positionValues[(int)i/8, i%8];
+                    double[,] positionValues = piecePosition[boardArray[i].getCurPiece()];
+                    blackScore += piece_values[boardArray[i].getPieceType()] + positionValues[(int)i/8, i%8];
                 }
             }
         }
-        return (f.getActiveColor() == "w") ? whiteScore - blackScore : blackScore - whiteScore;
+        return (f.getActiveColor().Equals("w") ? whiteScore - blackScore : blackScore - whiteScore);
     }
 
         /*int whiteScore = 0;

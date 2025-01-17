@@ -84,9 +84,9 @@ public class ChessBot
     }
 
     public static double combinedScoring(Fen fen) {
-        double materialScore = getPieceScoring(fen);
-        //double positionScore = getPositionScoring(fen);
-        return materialScore;// + positionScore; 
+        //double materialScore = getPieceScoring(fen);
+        double positionScore = getPositionScoring(fen);
+        return positionScore;// + materialScore; 
     }
     public static double getPositionScoring(Fen fen) {
         return Scorer.getPositionScore(fen);
