@@ -210,6 +210,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76b102ac367ff034e8885dfc4cf4a778, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Moves: {fileID: 0}
+  gameOverUI: {fileID: 0}
 --- !u!1 &169387126
 GameObject:
   m_ObjectHideFlags: 0
@@ -227,7 +229,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &169387127
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -931,6 +933,7 @@ MonoBehaviour:
   b_b: {fileID: 108064482171880929, guid: 49db8031849d78d48b58034486ff9065, type: 3}
   b_n: {fileID: 108064482171880929, guid: f06ef46c8688284488a874fbacdf517b, type: 3}
   b_p: {fileID: 108064482171880929, guid: d1bb34f9180379c4c8f8e98098d9b8bb, type: 3}
+  gos: {fileID: 0}
 --- !u!4 &509483830
 Transform:
   m_ObjectHideFlags: 0
@@ -1220,6 +1223,7 @@ MonoBehaviour:
   b_b: {fileID: 0}
   b_n: {fileID: 0}
   b_p: {fileID: 0}
+  gos: {fileID: 0}
   whiteScoreBoard: {fileID: 169387127}
   blackScoreBoard: {fileID: 442760874}
   whiteScore: 0
