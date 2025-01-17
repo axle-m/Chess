@@ -119,7 +119,7 @@ public class Scorer : Board {
 
 
 
-    static readonly Dictionary<char, int> piece_values = new Dictionary<char, int>
+    public static readonly Dictionary<char, int> piece_values = new Dictionary<char, int>
     {
         { 'k', 256 },   //give king arbitrarily high value to ensure any position in which a side can capture a king is always chosen
         { 'q', 9 }, 
@@ -129,7 +129,7 @@ public class Scorer : Board {
         { 'p', 1 }
     };
 
-    static readonly Dictionary<char, double[,]> piecePosition = new Dictionary<char, double[,]>
+    public static readonly Dictionary<char, double[,]> piecePosition = new Dictionary<char, double[,]>
     {
 
 

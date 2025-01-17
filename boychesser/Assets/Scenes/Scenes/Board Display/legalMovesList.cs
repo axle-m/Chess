@@ -195,10 +195,59 @@ public class LegalMovesList
             }
         }
 
-        legalMoves = moves.ToArray();
+        legalMoves = orderMoves(moves, tiles);
 
         return legalMoves;
 
+    }
+
+    static private string[] orderMoves(List<string> moves, Tile[] tiles)
+    {
+        List<string[]> captures = new List<string[]>();
+        List<string> nonCaptures = new List<string>();
+
+        foreach (string move in moves)
+        {
+            int start = Tile.ToIndex(move.Substring(1, 2)); //Substring in c# takes in (index, length)
+            int end = Tile.ToIndex(move.Substring(3, 2));
+
+            if (tiles[end].getPieceType() != '0')
+            {
+                captures.Add(new string[] { move, (Scorer.piece_values[tiles[end].getPieceType()] * 100 - Scorer.piece_values[tiles[start].getPieceType()]).ToString() });
+            }
+            else
+            {
+                nonCaptures.Add(move);
+            }
+        }
+
+        List<string> orderedMoves = new List<string>();
+
+        foreach (string s in sortCaptures(captures))
+        {
+            orderedMoves.Add(s);
+        }
+
+        foreach (string s in nonCaptures)
+        {
+            orderedMoves.Add(s);
+        }
+
+        return orderedMoves.ToArray();
+    }
+
+    static private List<string> sortCaptures(List<string[]> captures)
+    {
+        List<string> sortedCaptures = new List<string>();
+
+        List<string[]> sorted = captures.OrderBy(x => x[1]).ToList();
+
+        foreach (string[] s in sorted)
+        {
+            sortedCaptures.Add(s[0]);
+        }
+
+        return sortedCaptures;
     }
 
     static private bool IsWithinBounds(int tileIndex)

@@ -7,17 +7,7 @@ using UnityEngine;
 
 public class ChessBot
 {
-
-    /* a couple of things:
-     * methods in this class should be static
-     * the bot takes in a board and an array of legal moves
-     * there should be a method bestMove(String[] moves, String board) that returns the best move
-     * 
-     * Also you're currently passing in a LegalMovesList object, and then using it to create an array of legal moves. You should be using a string array. Refer to randomMove for how it should be implemented
-     * although i did modify the other method signatures to take in a string array instead of a LegalMovesList object and a fen string to describe a board
-     */
-
-    private static int depth = 2; // start at a low depth for now
+    private static int depth = 3; // start at a low depth for now
 
     void Start()
     {
@@ -57,7 +47,7 @@ public class ChessBot
         return max;
     }
 
-    public static double AlphaBetaNegamax(Fen fen, int depth, double alpha, double beta)
+    public static double AlphaBetaNegamax(Fen fen, int depth, double alpha, double beta) //on average between 3/4 and 1/2 as fast as just negamax, gets faster as depth increases
     {
         // Base case: terminal state or depth is 0
         if (depth == 0)
@@ -98,8 +88,8 @@ public class ChessBot
         foreach (string move in moves)
         {
             Fen newBoardPos = new Fen(Fen.move(f.ToString(), move));
-            //double eval = AlphaBetaNegamax(newBoardPos, depth, Double.NegativeInfinity, Double.PositiveInfinity);
-            double eval = Negamax(newBoardPos, depth);
+            double eval = AlphaBetaNegamax(newBoardPos, depth, Double.NegativeInfinity, Double.PositiveInfinity);
+            //double eval = Negamax(newBoardPos, depth);
             evalMoves.Add(new string[] { move, eval.ToString() });
         }
 

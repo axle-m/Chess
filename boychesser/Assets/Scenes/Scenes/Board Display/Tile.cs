@@ -107,5 +107,10 @@ public class Tile
     {
         return $"{num} {name} {curPiece} {pieceType} {pieceColor}";
     }
+
+    internal static int ToIndex(string v)
+    {
+        return (v[0] - 'a') + 8 * (v[1] - '1');
+    }
 }
 
