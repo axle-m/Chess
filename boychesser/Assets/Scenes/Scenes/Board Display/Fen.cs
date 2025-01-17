@@ -72,6 +72,10 @@ public class Fen
         return ActiveColor;
     }
 
+    public int getFullMoves(){
+        return FullmoveNumber;
+    }
+
     public override string ToString()
     {
         return $"{Board} {ActiveColor} {CastlingAvailability} {EnPassantTarget} {HalfmoveClock} {FullmoveNumber}";

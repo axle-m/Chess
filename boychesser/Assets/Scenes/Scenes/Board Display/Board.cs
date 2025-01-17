@@ -51,7 +51,6 @@ public class Board : MonoBehaviour
 
     Tile selectedTile = null;
     private string botColor = "b";
-    public int moves = 0;
     
     
     void Start()
@@ -82,10 +81,9 @@ public class Board : MonoBehaviour
                 placePieces();
             }
             else tryMove();
-            moves++;
         }
         else{
-            gos.Setup(moves);
+            gos.Setup(curFen.getFullMoves());
         }
         
     }
