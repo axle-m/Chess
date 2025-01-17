@@ -8,6 +8,6 @@ public class GameOverScript : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Setup(int moves) {
         gameOverUI.SetActive(true);
-        Moves.text = moves.ToString() + "MOVES";
+        Moves.text = "MOVES: " + moves.ToString();
     }
 }

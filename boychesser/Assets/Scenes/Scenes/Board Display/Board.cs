@@ -37,6 +37,7 @@ public class Board : MonoBehaviour
 
     //fen
     //"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    //"5k2/8/4N3/8/8/8/8/8 w - 0 1";
 
     public const string START_FEIN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
