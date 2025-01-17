@@ -56,7 +56,39 @@ public class ChessBot
         }
         return max;
     }
-    
+
+    public static double AlphaBetaNegamax(Fen fen, int depth, double alpha, double beta)
+    {
+        // Base case: terminal state or depth is 0
+        if (depth == 0)
+        {
+            return -combinedScoring(fen);
+        }
+
+        double max = Double.NegativeInfinity;
+
+        string[] moves = LegalMovesList.getLegalMoves(fen);
+        foreach (string move in moves)
+        {
+            Fen newBoardPos = new Fen(Fen.move(fen.ToString(), move));
+            double score = -AlphaBetaNegamax(newBoardPos, depth - 1, -beta, -alpha);
+
+            if (score > max)
+            {
+                max = score;
+            }
+
+            alpha = Math.Max(alpha, score);
+
+            // Alpha-Beta Pruning
+            if (alpha >= beta)
+            {
+                break;
+            }
+        }
+        return max;
+    }
+
     public static string GetBestMove(String fenString)
     {
         Fen f = new Fen(fenString);
@@ -66,6 +98,7 @@ public class ChessBot
         foreach (string move in moves)
         {
             Fen newBoardPos = new Fen(Fen.move(f.ToString(), move));
+            //double eval = AlphaBetaNegamax(newBoardPos, depth, Double.NegativeInfinity, Double.PositiveInfinity);
             double eval = Negamax(newBoardPos, depth);
             evalMoves.Add(new string[] { move, eval.ToString() });
         }
