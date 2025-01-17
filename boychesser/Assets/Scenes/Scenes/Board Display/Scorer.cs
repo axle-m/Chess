@@ -152,12 +152,12 @@ public class Scorer : Board {
         double whiteScore = 0;
         double blackScore = 0;
 
-        string board = f.ToString().Split('/')[0];
+        string board = f.ToString().Split(' ')[0];
         int pieceScore;
         char[] boardCharArray = board.ToCharArray();
         foreach(char c in boardCharArray){
             if (piece_values.ContainsKey(char.ToLower(c))){
-                pieceScore = piece_values[c];
+                pieceScore = piece_values[char.ToLower(c)];
                 if(char.IsUpper(c)) {
                     whiteScore += pieceScore;
                 }
@@ -168,7 +168,7 @@ public class Scorer : Board {
         }
         print(whiteScore);
         print(blackScore);
-        return (f.getActiveColor() == "w") ? (whiteScore - blackScore) : (blackScore - whiteScore);
+        return (f.getActiveColor().Equals("w")) ? (whiteScore - blackScore) : (blackScore - whiteScore);
     }
         
     public static double getPositionScore(Fen f){
