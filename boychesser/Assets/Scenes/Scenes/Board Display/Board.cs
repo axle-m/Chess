@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditorInternal;
@@ -49,15 +51,18 @@ public class Board : MonoBehaviour
 
     Tile selectedTile = null;
     private string botColor = "b";
-
+    public int moves = 0;
+    public GameOverScreen GameOverScreen;
+    
     void Start()
     {
+        
         //randomly select bot color
         System.Random random = new System.Random();
         //botColor = random.Next(0, 2) == 0 ? "w" : "b";
 
         curFen = new Fen(START_FEIN);
-
+        
         CreateGraphicalBoard();
         placePieces();
         PrecomputeMoveData.precomputedMoveData();
@@ -76,7 +81,12 @@ public class Board : MonoBehaviour
                 placePieces();
             }
             else tryMove();
+            moves++;
         }
+        else{
+            GameOverScreen.Setup(moves);
+        }
+        
     }
 
     void tryMove()
