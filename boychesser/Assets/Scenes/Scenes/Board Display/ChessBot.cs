@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class ChessBot
 {
-    private static int depth = 3; // start at a low depth for now
+    private static int depth = 2; // start at a low depth for now
 
     void Start()
     {

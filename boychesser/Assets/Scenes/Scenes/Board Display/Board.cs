@@ -52,7 +52,7 @@ public class Board : MonoBehaviour
     Tile selectedTile = null;
     private string botColor = "b";
     public int moves = 0;
-    public GameOverScreen GameOverScreen;
+    
     
     void Start()
     {
@@ -66,8 +66,9 @@ public class Board : MonoBehaviour
         CreateGraphicalBoard();
         placePieces();
         PrecomputeMoveData.precomputedMoveData();
+        
     }
-
+    public GameOverScript gos;
     private void Update()
     {
         if (curFen.winConditions().Equals("continue")) {
@@ -84,7 +85,7 @@ public class Board : MonoBehaviour
             moves++;
         }
         else{
-            GameOverScreen.Setup(moves);
+            gos.Setup(moves);
         }
         
     }
